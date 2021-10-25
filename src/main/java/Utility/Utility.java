@@ -56,6 +56,7 @@ public class Utility {
     public static ArrayList<Integer> numMateriali700 = new ArrayList<>();
     public static ArrayList<Integer> numMateriali600 = new ArrayList<>();
 
+//    Classe utilizzate per la funzione che trova i materiali fermi da 24H. Ho bisogno di avere tutti i materliali in circolazione.
     public static void compilaALnumeriMateriali() {
         for (int i = 1; i <= 60; i++) {
             if (i != 17) {
