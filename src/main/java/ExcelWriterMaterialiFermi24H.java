@@ -60,7 +60,7 @@ public class ExcelWriterMaterialiFermi24H {
         c.add(Calendar.DATE, 1);  // number of days to add
         String nextDate = sdf.format(c.getTime());  // dt is now the new date
 
-        Cell cell = row.createCell(3);
+        Cell cell = row.createCell(2);
         cell.setCellValue((String) "MATERIALI FERMI DA 24H DEL: " + dateToSearch);
         cell.setCellStyle(cs3);
 

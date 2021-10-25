@@ -3,6 +3,7 @@ import Entity.StrisciaIvu;
 import Utility.Utility;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -20,6 +21,10 @@ public class TabellaSegnalazioni {
 
     public static void main(String[] args) throws IOException, InvalidFormatException, ParseException {
         String dateToSearch = "12/09/2021";
+
+
+//      Verifico la presenza dei file necessari
+        verificaFile();
 
         ExcelReaderSO excelReaderSO = new ExcelReaderSO();
 
@@ -72,6 +77,21 @@ public class TabellaSegnalazioni {
         excelWriterMaterialiFermi24H.write(listTreniFermi24H500,listTreniFermi24H1000, listTreniFermi24H700, listTreniFermi24H600, dateToSearch);
 
 
+    }
+
+//  Funzione per verificare la presenza dei file necessari
+    private static void verificaFile() {
+        System.out.println("Sto eseguendo il programma da = " + System.getProperty("user.dir"));
+        File f = new File(XLSX_FILE_PATH_SO);
+        if (!f.exists()){
+            System.out.println("Path assoluto del file: " + f.getAbsolutePath());
+            System.out.println("Il file ListaSegnalazioniSO.xls NON è presente nella cartella di esecuzione");
+        }
+        f = new File(XLSX_FILE_PATH_IVU);
+        if (!f.exists()){
+            System.out.println("Path assoluto del file: " + f.getAbsolutePath());
+            System.out.println("Il file export.xlsx NON è presente nella cartella di esecuzione");
+        }
     }
 
     public static void printListTurnoIvuAggregata(ArrayList<StrisciaIvu> list, ArrayList<SegnalazioniSO> listSegnalazioni, String materiali){

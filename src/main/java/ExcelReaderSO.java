@@ -15,6 +15,7 @@ public class ExcelReaderSO {
     public ArrayList <SegnalazioniSO> ExcelReaderSO(String path) throws IOException, InvalidFormatException {
 
         // Creating a Workbook from an Excel file (.xls or .xlsx)
+
         Workbook workbook = WorkbookFactory.create(new File(path));
 
         // Retrieving the number of sheets in the Workbook
