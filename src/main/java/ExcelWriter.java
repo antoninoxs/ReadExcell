@@ -245,17 +245,28 @@ public class ExcelWriter {
             cell = row.createCell(4);
             cell.setCellStyle(csl);
 
+
+            ArrayList<String> treniDaCercare = tempStriscia.getTreniStrisciaIVU();
+
             int offsetSO = 1;
             String nota = "";
-            for (int j = 0; j < listSegnalazioniSO.size(); j++) {
-                if (tempStriscia.getTipologiaVeicolo().equals(listSegnalazioniSO.get(j).getTipologiaVeicolo()) && tempStriscia.getNumeroMateriale() == listSegnalazioniSO.get(j).getNumeroMateriale()) {
-//                    System.out.println(listSegnalazioni.get(j).getNota());
-                    offsetSO++;
-//                    cell = row.createCell(3+offset);
-//                    cell.setCellValue((String) listSegnalazioni.get(j).getNota());
-                    nota = nota + "-  " + (String) listSegnalazioniSO.get(j).getNota() + "\n";
+            for (String trenoTmp : treniDaCercare){
+                for (int j = 0; j < listSegnalazioniSO.size(); j++) {
+//                    if (tempStriscia.getTipologiaVeicolo().equals(listSegnalazioniSO.get(j).getTipologiaVeicolo()) && tempStriscia.getNumeroMateriale() == listSegnalazioniSO.get(j).getNumeroMateriale()) {
+////                    System.out.println(listSegnalazioni.get(j).getNota());
+//                        offsetSO++;
+////                    cell = row.createCell(3+offset);
+////                    cell.setCellValue((String) listSegnalazioni.get(j).getNota());
+//                        nota = nota + "-  " + (String) listSegnalazioniSO.get(j).getNota() + "\n";
+//                    }
+                    SegnalazioniSO tempSegnSO = listSegnalazioniSO.get(j);
+                    if(trenoTmp.equals(tempSegnSO.getNumeroTreno())){
+                        offsetSO++;
+                        nota = nota + "-  [" +trenoTmp+ "] "+ (String) tempSegnSO.getNota() + "\n";
+                    }
                 }
             }
+
             cell.setCellValue(nota);
 
             cell = row.createCell(5);
@@ -263,16 +274,23 @@ public class ExcelWriter {
 
             int offsetPDB = 1;
             nota = "";
-            for (int j = 0; j < listSegnalazioniPDB.size(); j++) {
-                if (tempStriscia.getTipologiaVeicolo().equals(listSegnalazioniPDB.get(j).getTipologiaVeicolo()) && tempStriscia.getNumeroMateriale() == listSegnalazioniPDB.get(j).getNumeroMateriale()) {
-//                    System.out.println(listSegnalazioni.get(j).getNota());
-                    offsetPDB++;
-//                    cell = row.createCell(3+offset);
-//                    cell.setCellValue((String) listSegnalazioni.get(j).getNota());
+            for (String trenoTmp : treniDaCercare) {
+                for (int j = 0; j < listSegnalazioniPDB.size(); j++) {
+//                if (tempStriscia.getTipologiaVeicolo().equals(listSegnalazioniPDB.get(j).getTipologiaVeicolo()) && tempStriscia.getNumeroMateriale() == listSegnalazioniPDB.get(j).getNumeroMateriale()) {
+////                    System.out.println(listSegnalazioni.get(j).getNota());
+//                    offsetPDB++;
+////                    cell = row.createCell(3+offset);
+////                    cell.setCellValue((String) listSegnalazioni.get(j).getNota());
+//                    SegnalazioniPDB segnPDB= listSegnalazioniPDB.get(j);
+//                    nota = nota + "-  " + (String) segnPDB.getCodice() +" - "+ segnPDB.getOrgano() +" - "+ segnPDB.getUbicazione() +" - "+ segnPDB.getDescrizione() +" - "+ segnPDB.getPosizione() + "\n";
+//                }
+                    SegnalazioniPDB tempSegnPDB = listSegnalazioniPDB.get(j);
+                    if (trenoTmp.equals(tempSegnPDB.getNumeroTreno())) {
+                        offsetPDB++;
                     SegnalazioniPDB segnPDB= listSegnalazioniPDB.get(j);
-                    nota = nota + "-  " + (String) segnPDB.getCodice() +" - "+ segnPDB.getOrgano() +" - "+ segnPDB.getUbicazione() +" - "+ segnPDB.getDescrizione() +" - "+ segnPDB.getPosizione() + "\n";
+                        nota = nota + "-  [" + trenoTmp + "] " + (String) segnPDB.getCodice() +" - "+ segnPDB.getOrgano() +" - "+ segnPDB.getUbicazione() +" - "+ segnPDB.getDescrizione() +" - "+ segnPDB.getPosizione() + "\n";
+                    }
                 }
-
             }
             cell.setCellValue(nota);
 

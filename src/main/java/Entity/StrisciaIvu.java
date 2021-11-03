@@ -3,6 +3,7 @@ package Entity;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 
 // la classe rappresenta i giri materiali del turno su IVU
@@ -17,6 +18,7 @@ public class StrisciaIvu {
     private int numeroMateriale;
     private String numeroTreno;
     private String numeroTrenoArrivo;
+    private ArrayList<String> treniStrisciaIVU;
 
     public Date getDataPartenzaPrev() {
         return dataPartenzaPrev;
@@ -37,6 +39,7 @@ public class StrisciaIvu {
         numeroMateriale = 0;
         numeroTreno = "";
         numeroTrenoArrivo = "";
+        treniStrisciaIVU = new ArrayList<>();
     }
 
     public boolean isEmpty(){
@@ -127,4 +130,23 @@ public class StrisciaIvu {
         this.numeroTrenoArrivo = numeroTrenoArrivo;
     }
 
+    public ArrayList<String> getTreniStrisciaIVU() {
+        return treniStrisciaIVU;
+    }
+
+    public void setTreniStrisciaIVU(ArrayList<String> treniStrisciaIVU) {
+        this.treniStrisciaIVU = treniStrisciaIVU;
+    }
+
+    public void addTrenoTurnoMacchina(String numeroTreno) {
+        treniStrisciaIVU.add(numeroTreno);
+    }
+
+    public void printTreniTurnoMacchina(){
+        String s = "";
+        for(String tsi : treniStrisciaIVU){
+            s = s + tsi + "; ";
+        }
+        System.out.println(denominazioneTurnoMacc + "-> " + s + "    " + tipologiaVeicolo+numeroMateriale);
+    }
 }

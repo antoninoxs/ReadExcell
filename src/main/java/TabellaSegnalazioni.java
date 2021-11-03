@@ -1,6 +1,7 @@
 import Entity.SegnalazioniPDB;
 import Entity.SegnalazioniSO;
 import Entity.StrisciaIvu;
+import Entity.TurnoMacchina;
 import Utility.Utility;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
@@ -17,12 +18,13 @@ import java.util.Scanner;
 public class TabellaSegnalazioni {
 
     public static final String XLSX_FILE_PATH_IVU = "./export.xlsx";
+    public static final String XLSX_FILE_PATH_IVUCERCA = "./exportCerca.xlsx";
     public static final String XLSX_FILE_PATH_SO = "./ListaSegnalazioniSO.xls";
     public static final String XLSX_FILE_PATH_PDB = "./ListaSegnalazioniPDB.xls";
 
 
     public static void main(String[] args) throws IOException, InvalidFormatException, ParseException {
-        String dateToSearch = "21/09/2021";
+        String dateToSearch = "07/10/2021";
 
 
         System.out.println("Sto eseguendo il programma da = " + System.getProperty("user.dir"));
@@ -30,22 +32,33 @@ public class TabellaSegnalazioni {
         Boolean fileIVUexists = verificaFile(XLSX_FILE_PATH_IVU);
         Boolean fileSOexists = verificaFile(XLSX_FILE_PATH_SO);
         Boolean filePDBexists = verificaFile(XLSX_FILE_PATH_PDB);
+        Boolean fileIVUCERCAexists = verificaFile(XLSX_FILE_PATH_IVUCERCA);
 
         ExcelReaderIVU excelReaderIVU = new ExcelReaderIVU();
         ExcelReaderSO excelReaderSO = new ExcelReaderSO();
         ExcelReaderPDB excelReaderPDB = new ExcelReaderPDB();
 
+        ExcelReaderIVUDaCerca excelReaderIVUDaCerca = new ExcelReaderIVUDaCerca();
+
+
+
+
         ExcelWriter excelWriter = new ExcelWriter();
+        ExcelWriterMaterialiFermi24H excelWriterMaterialiFermi24H = new ExcelWriterMaterialiFermi24H();
 
         // funzione inserimento data di ricerca da Command Line
-//        Date searchDate = inputDataCommandLine();
-        Date searchDate = stringToDate(dateToSearch);
+        Date searchDate = inputDataCommandLine();
+ //       Date searchDate = Utility.stringToDate(dateToSearch);
 
 
-        excelReaderIVU.ExcelREaderIVU(XLSX_FILE_PATH_IVU, searchDate);
+        ArrayList<TurnoMacchina> turnoMacchinaArrayList = excelReaderIVUDaCerca.ExcelReaderIVUdaCerca(XLSX_FILE_PATH_IVUCERCA,searchDate);
+
+        excelReaderIVU.ExcelREaderIVU(XLSX_FILE_PATH_IVU, searchDate, turnoMacchinaArrayList);
 
         ArrayList<SegnalazioniSO> listSegnalazioni = excelReaderSO.ExcelReaderSO(XLSX_FILE_PATH_SO);
         ArrayList<SegnalazioniPDB> listSegnalazioniPDB = excelReaderPDB.ExcelReaderPDB(XLSX_FILE_PATH_PDB);
+
+
 
 
         ArrayList<StrisciaIvu> list500 = excelReaderIVU.listTurnoFuoriImpianto500;
@@ -60,12 +73,14 @@ public class TabellaSegnalazioni {
 
         excelWriter.write(list500, list1000, list700, list600, listSegnalazioni, listSegnalazioniPDB, dateToSearch);
 
+//        excelWriter.write(list500, list1000, list700, list600, turnoMacchinaArrayList, listSegnalazioni, listSegnalazioniPDB, dateToSearch);
+
+//        Materiali fermi da 24H
         ArrayList<Integer> listTreniFermi24H500 = excelReaderIVU.numMatFermiDa24H500;
         ArrayList<Integer> listTreniFermi24H1000 = excelReaderIVU.numMatFermiDa24H1000;
         ArrayList<Integer> listTreniFermi24H700 = excelReaderIVU.numMatFermiDa24H700;
         ArrayList<Integer> listTreniFermi24H600 = excelReaderIVU.numMatFermiDa24H600;
 
-        ExcelWriterMaterialiFermi24H excelWriterMaterialiFermi24H = new ExcelWriterMaterialiFermi24H();
         excelWriterMaterialiFermi24H.write(listTreniFermi24H500,listTreniFermi24H1000, listTreniFermi24H700, listTreniFermi24H600, dateToSearch);
 
 
@@ -81,21 +96,10 @@ public class TabellaSegnalazioni {
             System.out.println("La data inserita NON è corretta!!!");
         }
 
-        return stringToDate(dateToSearch);
+        return Utility.stringToDate(dateToSearch);
     }
 
-    private static Date stringToDate (String dateToSearch){
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
-        Date searchDate = null;
-        try {
-            searchDate = format.parse(dateToSearch);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Search DATE: "+searchDate); // Sat Jan 02 00:00:00 GMT 2010
 
-        return searchDate;
-    }
 
     //  Funzione per verificare la presenza dei file necessari
     private static boolean verificaFile(String path) {

@@ -1,9 +1,9 @@
 package Utility;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Scanner;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Utility {
 
@@ -38,6 +38,19 @@ public class Utility {
         catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public static Date stringToDate(String dateToSearch){
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
+        Date searchDate = null;
+        try {
+            searchDate = format.parse(dateToSearch);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//        System.out.println("Search DATE: "+searchDate); // Sat Jan 02 00:00:00 GMT 2010
+
+        return searchDate;
     }
 
     public static void main(String[] args) {
