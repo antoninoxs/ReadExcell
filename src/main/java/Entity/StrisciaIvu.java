@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 
-// la classe rappresenta i giri materiali del turno su IVU
+// la classe rappresenta i giri materiali del turno su IVU da assegnazione Tabellare
 public class StrisciaIvu {
     private Date dataPartenzaPrev;
     private String denominazioneTurnoMacc;
@@ -16,8 +16,8 @@ public class StrisciaIvu {
     private LocalTime arrivoPrevisto;
     private String tipologiaVeicolo;
     private int numeroMateriale;
-    private String numeroTreno;
-    private String numeroTrenoArrivo;
+    private String numeroCorsa;
+    private String numeroCorsaArrivo;
     private ArrayList<String> treniStrisciaIVU;
 
     public Date getDataPartenzaPrev() {
@@ -37,25 +37,25 @@ public class StrisciaIvu {
         arrivoPrevisto = LocalTime.of(0,0);
         tipologiaVeicolo = "";
         numeroMateriale = 0;
-        numeroTreno = "";
-        numeroTrenoArrivo = "";
+        numeroCorsa = "";
+        numeroCorsaArrivo = "";
         treniStrisciaIVU = new ArrayList<>();
     }
 
     public boolean isEmpty(){
         boolean result = false;
-        if (depositoPartenza.isEmpty() || depositoArrivo.isEmpty() || numeroTreno.isEmpty())
+        if (depositoPartenza.isEmpty() || depositoArrivo.isEmpty() || numeroCorsa.isEmpty())
             result = true;
         return result;
     }
 
     public static void printStrisciaIvu(StrisciaIvu s){
-        System.out.printf("%s %s %s %s %s %s %s %s \n",s.dataPartenzaPrev, s.denominazioneTurnoMacc, s.depositoPartenza, s.depositoArrivo, s.tipologiaVeicolo, s.numeroMateriale, s.numeroTreno, s.numeroTrenoArrivo);
+        System.out.printf("%s %s %s %s %s %s %s %s \n",s.dataPartenzaPrev, s.denominazioneTurnoMacc, s.depositoPartenza, s.depositoArrivo, s.tipologiaVeicolo, s.numeroMateriale, s.numeroCorsa, s.numeroCorsaArrivo);
     }
 
     public String toString(){
        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-       return dateFormat.format(dataPartenzaPrev) +"\t "+ depositoPartenza +"\t "+ depositoArrivo +"\t "+ tipologiaVeicolo +"\t "+ numeroMateriale +"\t "+ numeroTreno +"\t "+ numeroTrenoArrivo +"\t "+ partenzaPrevista +"\t "+ arrivoPrevisto;
+       return denominazioneTurnoMacc +"\t" + dateFormat.format(dataPartenzaPrev) +"\t "+ depositoPartenza +"\t "+ depositoArrivo +"\t "+ tipologiaVeicolo +"\t "+ numeroMateriale +"\t "+ numeroCorsa +"\t "+ numeroCorsaArrivo +"\t "+ partenzaPrevista +"\t "+ arrivoPrevisto;
     }
 
     public String getDenominazioneTurnoMacc() {
@@ -114,20 +114,20 @@ public class StrisciaIvu {
         this.numeroMateriale = numeroMateriale;
     }
 
-    public String getNumeroTreno() {
-        return numeroTreno;
+    public String getNumeroCorsa() {
+        return numeroCorsa;
     }
 
-    public void setNumeroTreno(String numeroTreno) {
-        this.numeroTreno = numeroTreno;
+    public void setNumeroCorsa(String numeroCorsa) {
+        this.numeroCorsa = numeroCorsa;
     }
 
-    public String getNumeroTrenoArrivo() {
-        return numeroTrenoArrivo;
+    public String getNumeroCorsaArrivo() {
+        return numeroCorsaArrivo;
     }
 
-    public void setNumeroTrenoArrivo(String numeroTrenoArrivo) {
-        this.numeroTrenoArrivo = numeroTrenoArrivo;
+    public void setNumeroCorsaArrivo(String numeroCorsaArrivo) {
+        this.numeroCorsaArrivo = numeroCorsaArrivo;
     }
 
     public ArrayList<String> getTreniStrisciaIVU() {
