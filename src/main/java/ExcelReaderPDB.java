@@ -22,11 +22,10 @@ public class ExcelReaderPDB {
         Workbook workbook = WorkbookFactory.create(new File(path));
 
         // Retrieving the number of sheets in the Workbook
-        System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
+        System.out.println("La cartella di lavoro ha " + workbook.getNumberOfSheets() + " foglio");
 
         // 1. You can obtain a sheetIterator and iterate over it
         Iterator<Sheet> sheetIterator = workbook.sheetIterator();
-        System.out.println("Retrieving Sheets using Iterator");
         while (sheetIterator.hasNext()) {
             Sheet sheet = sheetIterator.next();
             System.out.println("=> " + sheet.getSheetName());

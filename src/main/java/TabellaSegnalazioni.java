@@ -23,7 +23,6 @@ public class TabellaSegnalazioni {
     public static final String XLSX_FILE_PATH_SO = "./ListaSegnalazioniSO.xls";
     public static final String XLSX_FILE_PATH_PDB = "./ListaSegnalazioniPDB.xls";
 
-
     public static final String XLSX_FILE_PATH_SO_FOLDER = "./FileEsportazioniPDPSO";
     public static final String XLSX_FILE_PATH_PDB_FOLDER = "./FileEsportazioniPDPPDB";
 
@@ -38,12 +37,18 @@ public class TabellaSegnalazioni {
     public static ArrayList<Treno> listTreniNoImpianto600[];
 
     public static void main(String[] args) throws IOException, InvalidFormatException, ParseException {
-//        String dateToSearch = "19/11/2021";
+//       String dateToSearch = "19/11/2021";
 //       Date searchDate = Utility.stringToDate(dateToSearch);
 
         // funzione inserimento data di ricerca da Command Line
         Date searchDate = inputDataCommandLine();
+        Date searchDateOriginale = searchDate;
 
+        long timestamp = searchDate.getTime();
+//        aggiungo 25 ore per prendere i treni a cavallo della mezzanotte
+        searchDate.setTime(timestamp + 90000000);
+        System.out.println(searchDate.toString());
+        
         System.out.println("Sto eseguendo il programma da = " + System.getProperty("user.dir"));
 //      Verifico la presenza dei file necessari
 //        Boolean fileIVUexists = verificaFile(XLSX_FILE_PATH_IVU);
@@ -58,12 +63,15 @@ public class TabellaSegnalazioni {
         ExcelReaderIVUDaCerca excelReaderIVUDaCerca = new ExcelReaderIVUDaCerca();
         excelReaderIVUDaCerca.ExcelReaderIVUdaCercaMultipleDate(XLSX_FILE_PATH_IVUCERCA,searchDate);
 
+        ExcelReaderIVUDaCercaPartFuoriImpianto excelReaderIVUDaCercaPartFuoriImpianto = new ExcelReaderIVUDaCercaPartFuoriImpianto();
+        excelReaderIVUDaCercaPartFuoriImpianto.ExcelReaderIVUdaCercaTreniInPartenzaFuoriImpianto(XLSX_FILE_PATH_IVUCERCA,searchDate);
 
+        ExcelWriterTreniDaChiamare excelWriterTreniDaChiamare = new ExcelWriterTreniDaChiamare();
+        excelWriterTreniDaChiamare.write(excelReaderIVUDaCercaPartFuoriImpianto.listMateriali);
+
+//      Inizializzo ExcelWriter
         ExcelWriter excelWriter = new ExcelWriter();
-
-
-
-//        ExcelWriterMaterialiFermi24H excelWriterMaterialiFermi24H = new ExcelWriterMaterialiFermi24H();
+        ExcelWriterMaterialiFermi24H excelWriterMaterialiFermi24H = new ExcelWriterMaterialiFermi24H();
 
         size500 = excelReaderIVUDaCerca.size500;
         size1000 = excelReaderIVUDaCerca.size1000;
@@ -74,7 +82,6 @@ public class TabellaSegnalazioni {
         listTreniNoImpianto1000 = excelReaderIVUDaCerca.listTreniNoImpianto1000;
         listTreniNoImpianto700 = excelReaderIVUDaCerca.listTreniNoImpianto700;
         listTreniNoImpianto600 = excelReaderIVUDaCerca.listTreniNoImpianto600;
-
 
 //        excelReaderIVU.ExcelREaderIVU(XLSX_FILE_PATH_IVU, searchDate, turnoMacchinaArrayList);
 //        excelReaderIVU.ExcelREaderIVUmultiDate(XLSX_FILE_PATH_IVU, searchDate, searchDate, trenoArrayList);
@@ -89,7 +96,6 @@ public class TabellaSegnalazioni {
                 listSegnalazioniSO = excelReaderSO.ExcelReaderSO(XLSX_FILE_PATH_SO_FOLDER+"/"+file.getName());
             }
         }
-
         ArrayList<SegnalazioniPDB> listSegnalazioniPDB = new ArrayList<>();
 
         folder = new File(XLSX_FILE_PATH_PDB_FOLDER);
@@ -105,27 +111,24 @@ public class TabellaSegnalazioni {
         assegnaSegnalazioniAlTreno(listTreniNoImpianto700, size700, listSegnalazioniSO, listSegnalazioniPDB);
         assegnaSegnalazioniAlTreno(listTreniNoImpianto600, size600, listSegnalazioniSO, listSegnalazioniPDB);
 
-        stampaSegnalazioniAlTreno(listTreniNoImpianto500, size500);
-        stampaSegnalazioniAlTreno(listTreniNoImpianto1000, size1000);
-        stampaSegnalazioniAlTreno(listTreniNoImpianto700, size700);
-        stampaSegnalazioniAlTreno(listTreniNoImpianto600, size600);
-
+        excelReaderIVUDaCerca.printListTurnoMacchina();
+//        stampaSegnalazioniAlTreno(listTreniNoImpianto500, size500);
+//        stampaSegnalazioniAlTreno(listTreniNoImpianto1000, size1000);
+//        stampaSegnalazioniAlTreno(listTreniNoImpianto700, size700);
+//        stampaSegnalazioniAlTreno(listTreniNoImpianto600, size600);
 
 //        excelWriter.writeMultiDate(excelReaderIVU.giriPrimaRientroImpianto500, list1000, list700, list600, listSegnalazioni, listSegnalazioniPDB, dateToSearch);
 
         DateFormat dt = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
 
-        excelWriter.writeMultiDate(listTreniNoImpianto500, listTreniNoImpianto1000, listTreniNoImpianto700, listTreniNoImpianto600, listSegnalazioniSO,listSegnalazioniPDB, dt.format(searchDate));
+        excelWriter.writeMultiDate(listTreniNoImpianto500, listTreniNoImpianto1000, listTreniNoImpianto700, listTreniNoImpianto600, listSegnalazioniSO, listSegnalazioniPDB, dt.format(searchDateOriginale));
+
+        excelReaderIVUDaCerca.materialiFermiDa24H(searchDateOriginale);
 
 //        Materiali fermi da 24H
-//        ArrayList<Integer> listTreniFermi24H500 = excelReaderIVU.numMatFermiDa24H500;
-//        ArrayList<Integer> listTreniFermi24H1000 = excelReaderIVU.numMatFermiDa24H1000;
-//        ArrayList<Integer> listTreniFermi24H700 = excelReaderIVU.numMatFermiDa24H700;
-//        ArrayList<Integer> listTreniFermi24H600 = excelReaderIVU.numMatFermiDa24H600;
+        ArrayList<Treno> ultimoTrenoMatFermiDa24H = excelReaderIVUDaCerca.ultimoTrenoMaterialiFermiDa24H;
 
-//        excelWriterMaterialiFermi24H.write(listTreniFermi24H500,listTreniFermi24H1000, listTreniFermi24H700, listTreniFermi24H600, dateToSearch);
-
-
+        excelWriterMaterialiFermi24H.write(ultimoTrenoMatFermiDa24H, dt.format(searchDateOriginale));
     }
 
     private static void assegnaSegnalazioniAlTreno(ArrayList<Treno>[] listTreniNoImpianto, int sizeListaTreno, ArrayList<SegnalazioniSO> listSegnalazioniSO, ArrayList<SegnalazioniPDB> listSegnalazioniPDB) {
@@ -134,21 +137,26 @@ public class TabellaSegnalazioni {
             ArrayList<Treno> alTreno = listTreniNoImpianto[i];
             for (Treno treno : alTreno) {
                 for (SegnalazioniSO sSO : listSegnalazioniSO) {
-                    //devo comparare data, tipo materiale, numero materiale, nemero treno
+                    //devo comparare data, tipo materiale, numero materiale, numero treno
+                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    String dateTemp = dateFormat.format(treno.getDataPartenza());
+                    String dateTemp2 = dateFormat.format(sSO.getDataTreno());
 
-                    if (treno.getDataPartenza().equals(sSO.getDataTreno()) &&
+                    if (dateTemp.equals(dateTemp2) &&
                             treno.getTipologiaMateriale().equals(sSO.getTipologiaVeicolo()) &&
                             treno.getNumeroMateriale() == sSO.getNumeroMateriale() &&
                             treno.getNumeroCorsa().equals(sSO.getNumeroTreno()) &&
                             treno.getTipologiaCorsa().equals("Corsa di linea")){
-
                         treno.addSegnalazioneSO(sSO);
                     }
                 }
                 for (SegnalazioniPDB sPDB : listSegnalazioniPDB) {
-                    //devo comparare data, tipo materiale, numero materiale, nemero treno
+                    //devo comparare data, tipo materiale, numero materiale, numero treno
+                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    String dateTemp = dateFormat.format(treno.getDataPartenza());
+                    String dateTemp2 = dateFormat.format(sPDB.getDataTreno());
 
-                    if (treno.getDataPartenza().equals(sPDB.getDataTreno()) &&
+                    if (dateTemp.equals(dateTemp2) &&
                             treno.getTipologiaMateriale().equals(sPDB.getTipologiaVeicolo()) &&
                             treno.getNumeroMateriale() == sPDB.getNumeroMateriale() &&
                             treno.getNumeroCorsa().equals(sPDB.getNumeroTreno()) &&
@@ -171,13 +179,11 @@ public class TabellaSegnalazioni {
             System.out.println();
         }
     }
-
-
-
+    
     private static Date inputDataCommandLine() {
         System.out.println("Inserisci la data per la creazione della tabella nel formato gg/mm/aaaa es 26/04/2021");
         Scanner input = new Scanner(System.in);
-        String dateToSearch = input.nextLine();
+        String dateToSearch = input.nextLine() + " 0:0";
         System.out.println("Creo la tabella per la data: " + dateToSearch);
 
         if(!Utility.isValidDate(dateToSearch)){
@@ -186,8 +192,6 @@ public class TabellaSegnalazioni {
 
         return Utility.stringToDate(dateToSearch);
     }
-
-
 
     //  Funzione per verificare la presenza dei file necessari
     private static boolean verificaFile(String path) {

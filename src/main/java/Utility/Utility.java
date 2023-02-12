@@ -6,12 +6,16 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Utility {
+    public static int size500 = 61;
+    public static int size1000 = 70;
+    public static int size700 = 18;
+    public static int size600 = 50;
 
     public static GregorianCalendar parseDate(String date) {
         int[] parsed = new int[3];
         int j = 0;
         String token = "";
-        for (int i = 0; i < date.length(); i++) {
+        for (int i = 0; i < 10; i++) {
             if (date.charAt(i) != '/') {
                 token += date.charAt(i);
 //                System.out.println(token);
@@ -41,7 +45,7 @@ public class Utility {
     }
 
     public static Date stringToDate(String dateToSearch){
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy H:m", Locale.ITALY);
         Date searchDate = null;
         try {
             searchDate = format.parse(dateToSearch);
@@ -111,5 +115,55 @@ public class Utility {
         }
     }
 
+    public static Map<String, String> creaMappaLocalita() {
+        Map<String, String> mapLocalità = new HashMap<>();
+
+            mapLocalità.put("AN","ANCONA");
+            mapLocalità.put("AVER","AVERSA");
+            mapLocalità.put("BACL","BARI");
+            mapLocalità.put("BADL","BARI");
+            mapLocalità.put("BATT","BATTIPAGLIA");
+            mapLocalità.put("BG","BERGAMO");
+            mapLocalità.put("BN","BENEVENTO");
+            mapLocalità.put("BOCL","BOLOGNA CENTRALE");
+            mapLocalità.put("BORAV","BOLOGNA RAVONE");
+            mapLocalità.put("BS","BRESCIA");
+            mapLocalità.put("BZ","BOLZANO");
+            mapLocalità.put("BZDL","BOLZANO");
+            mapLocalità.put("FICM","FIRENZE CAMPO MARTE");
+            mapLocalità.put("FISM","FIRENZE S.M. NOVELLA");
+            mapLocalità.put("GEBR","GENOVA BRIGNOLE");
+            mapLocalità.put("GEPP","GENOVA PIAZZA PRINCIPE");
+            mapLocalità.put("GESM","GENOVA SAN PIER D'ARENA");
+            mapLocalità.put("LESMC","LECCE");
+            mapLocalità.put("MICL","MILANO CENTRALE");
+            mapLocalità.put("MIPAC","MILANO PARCO CENTRALE");
+            mapLocalità.put("MICE","MILANO MILANO CERTOSA");
+            mapLocalità.put("MN","MANTOVA");
+            mapLocalità.put("MSDL","VENEZIA MESTRE");
+            mapLocalità.put("MSCL","MESTRE CENTRALE");
+            mapLocalità.put("NACL","NAPOLI CENTRALE");
+            mapLocalità.put("MODA","MODANE");
+            mapLocalità.put("PAGLY","PARIGI");
+            mapLocalità.put("PECL","PESCARA");
+            mapLocalità.put("PG","PERUGIA");
+            mapLocalità.put("RA","RAVENNA");
+            mapLocalità.put("RCCL","REGGIO CALABRIA CENTRALE");
+            mapLocalità.put("RCDL","REGGIO CALABRIA DL");
+            mapLocalità.put("RMOMV","ROMA MAV");
+            mapLocalità.put("RMTM","ROMA TERMINI");
+            mapLocalità.put("RMOS","ROMA OSTIENSE");
+            mapLocalità.put("SA","SALERNO");
+            mapLocalità.put("SIB","SIBARI");
+            mapLocalità.put("SRBM","LECCE SURBO");
+            mapLocalità.put("TA","TARANTO");
+            mapLocalità.put("TOSN","TORINO SMISTAMENTO");
+            mapLocalità.put("TOPN","TORINO PORTA NUOVA");
+            mapLocalità.put("TSCL","TRIESTE CENTRALE");
+            mapLocalità.put("UD","UDINE");
+            mapLocalità.put("VI","VICENZA");
+
+        return mapLocalità;
+    }
 
 }

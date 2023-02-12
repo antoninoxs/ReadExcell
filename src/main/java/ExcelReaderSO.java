@@ -19,11 +19,10 @@ public class ExcelReaderSO {
         Workbook workbook = WorkbookFactory.create(new File(path));
 
         // Retrieving the number of sheets in the Workbook
-        System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
+        System.out.println("La cartella di lavoro ha " + workbook.getNumberOfSheets() + " foglio");
 
         // 1. You can obtain a sheetIterator and iterate over it
         Iterator<Sheet> sheetIterator = workbook.sheetIterator();
-        System.out.println("Retrieving Sheets using Iterator");
         while (sheetIterator.hasNext()) {
             Sheet sheet = sheetIterator.next();
             System.out.println("=> " + sheet.getSheetName());
@@ -78,6 +77,7 @@ public class ExcelReaderSO {
                     segnSo.setTipologiaVeicolo(temp.substring(0, temp.length()-3));
                     segnSo.setNumeroMateriale(Integer.parseInt(temp.substring(temp.length()-3, temp.length())));
                 }
+//                System.out.println(segnSo.toString());
                 listSegnalazioniSO.add(segnSo);
             }
         }

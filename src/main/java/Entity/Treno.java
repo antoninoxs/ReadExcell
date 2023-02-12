@@ -13,8 +13,6 @@ public class Treno {
     private String denominazioneTurnoMacc;
     private String depositoPartenza;
     private String depositoArrivo;
-    private LocalTime partenzaPrevista;
-    private LocalTime arrivoPrevisto;
     private String tipologiaMateriale;
     private int numeroMateriale;
     private String numeroCorsa;
@@ -54,8 +52,6 @@ public class Treno {
         denominazioneTurnoMacc = "";
         depositoPartenza = "";
         depositoArrivo = "";
-        partenzaPrevista = LocalTime.of(0,0);
-        arrivoPrevisto = LocalTime.of(0,0);
         tipologiaCorsa = "";
         tipologiaMateriale = "";
         numeroMateriale = 0;
@@ -91,7 +87,9 @@ public class Treno {
 
     public String toString(){
        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-       return dateFormat.format(dataPartenza) +"\t "+ "["+partenzaPrevista +"-"+ partenzaPrevista+"]" + "\t "+  denominazioneTurnoMacc +"\t "+ tipologiaCorsa +"\t "+ numeroCorsa +"\t "+ depositoPartenza +"\t "+ depositoArrivo +"\t "+ tipologiaMateriale +"\t "+ numeroMateriale;
+       DateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
+
+       return dateFormat.format(dataPartenza) +"\t "+ "["+dateFormat1.format(dataPartenza) +"-"+ dateFormat1.format(dataArrivo)+"]" + "\t "+  denominazioneTurnoMacc +"\t "+ tipologiaCorsa +"\t "+ numeroCorsa +"\t "+ depositoPartenza +"\t "+ depositoArrivo +"\t "+ tipologiaMateriale +"\t "+ numeroMateriale;
     }
 
     public String getDenominazioneTurnoMacc() {
@@ -123,22 +121,6 @@ public class Treno {
 
     public void setDepositoArrivo(String depositoArrivo) {
         this.depositoArrivo = depositoArrivo;
-    }
-
-    public LocalTime getPartenzaPrevista() {
-        return partenzaPrevista;
-    }
-
-    public void setPartenzaPrevista(LocalTime partenzaPrevista) {
-        this.partenzaPrevista = partenzaPrevista;
-    }
-
-    public LocalTime getArrivoPrevisto() {
-        return arrivoPrevisto;
-    }
-
-    public void setArrivoPrevisto(LocalTime arrivoPrevisto) {
-        this.arrivoPrevisto = arrivoPrevisto;
     }
 
     public String getTipologiaMateriale() {

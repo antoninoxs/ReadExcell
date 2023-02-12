@@ -2,6 +2,7 @@ import Entity.SegnalazioniPDB;
 import Entity.SegnalazioniSO;
 import Entity.StrisciaIvu;
 import Entity.Treno;
+import Utility.Utility;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -17,61 +18,21 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ExcelWriter {
-
-    public Map<String, String> mapLocalità = new HashMap<>();
-
+    XSSFWorkbook workbook = new XSSFWorkbook();
     XSSFSheet sheet;
     Row row;
     int rowCount;
 
-    private void creaMappaLocalita() {
-        mapLocalità.put("AN","ANCONA");
-        mapLocalità.put("AVER","AVERSA");
-        mapLocalità.put("BACL","BARI");
-        mapLocalità.put("BADL","BARI");
-        mapLocalità.put("BATT","BATTIPAGLIA");
-        mapLocalità.put("BG","BERGAMO");
-        mapLocalità.put("BN","BENEVENTO");
-        mapLocalità.put("BOCL","BOLOGNA CENTRALE");
-        mapLocalità.put("BORAV","BOLOGNA RAVONE");
-        mapLocalità.put("BS","BRESCIA");
-        mapLocalità.put("BZ","BOLZANO");
-        mapLocalità.put("BZDL","BOLZANO");
-        mapLocalità.put("FICM","FIRENZE CAMPO MARTE");
-        mapLocalità.put("FISM","FIRENZE S.M. NOVELLA");
-        mapLocalità.put("GEBR","GENOVA BRIGNOLE");
-        mapLocalità.put("GEPP","GENOVA PIAZZA PRINCIPE");
-        mapLocalità.put("LESMC","LECCE");
-        mapLocalità.put("MICL","MILANO CENTRALE");
-        mapLocalità.put("MIPAC","MILANO PARCO CENTRALE");
-        mapLocalità.put("MICE","MILANO MILANO CERTOSA");
-        mapLocalità.put("MN","MANTOVA");
-        mapLocalità.put("MSDL","VENEZIA MESTRE");
-        mapLocalità.put("NACL","NAPOLI CENTRALE");
-        mapLocalità.put("MODA","MODANE");
-        mapLocalità.put("PECL","PESCARA");
-        mapLocalità.put("PG","PERUGIA");
-        mapLocalità.put("RA","RAVENNA");
-        mapLocalità.put("RCCL","REGGIO CALABRIA");
-        mapLocalità.put("RCDL","REGGIO CALABRIA");
-        mapLocalità.put("RMOMV","ROMA MAV");
-        mapLocalità.put("RMTM","ROMA TERMINI");
-        mapLocalità.put("RMOS","ROMA OSTIENSE");
-        mapLocalità.put("SIB","SIBARI");
-        mapLocalità.put("TA","TARANTO");
-        mapLocalità.put("TOSN","TORINO SMISTAMENTO");
-        mapLocalità.put("TOPN","TORINOO PORTA NUOVA");
-        mapLocalità.put("TSCL","TRIESTE CENTRALE");
-        mapLocalità.put("UD","UDINE");
-        mapLocalità.put("VI","VICENZA");
-    }
+    CellStyle yellowCSL;
+
 
     public void write(ArrayList<StrisciaIvu> list500, ArrayList<StrisciaIvu> list1000, ArrayList<StrisciaIvu> list700, ArrayList<StrisciaIvu> list600, ArrayList<SegnalazioniSO> listSegnalazioni, ArrayList<SegnalazioniPDB> listSegnalazioniPDB, String dateToSearch) throws IOException, ParseException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         sheet = workbook.createSheet("FLOTTA FUORI IMPIANTO");
 
-        creaMappaLocalita();
+
+        Map<String, String> mapLocalità = Utility.creaMappaLocalita();
 
         XSSFFont font= workbook.createFont();
         font.setFontHeightInPoints((short)12);
@@ -141,7 +102,8 @@ public class ExcelWriter {
         XSSFWorkbook workbook = new XSSFWorkbook();
         sheet = workbook.createSheet("FLOTTA FUORI IMPIANTO");
 
-        creaMappaLocalita();
+
+        Map<String, String> mapLocalità = Utility.creaMappaLocalita();
 
         XSSFFont font = workbook.createFont();
         font.setFontHeightInPoints((short) 12);
@@ -239,6 +201,9 @@ public class ExcelWriter {
     }
 
     private void writeListToExcel(ArrayList<StrisciaIvu> list, ArrayList<SegnalazioniSO> listSegnalazioniSO, CellStyle cs, CellStyle csl) {
+
+        Map<String, String> mapLocalità = Utility.creaMappaLocalita();
+
         for (int i=0; i<list.size(); i++) {
             row = sheet.createRow(++rowCount);
             Cell cell;
@@ -289,6 +254,9 @@ public class ExcelWriter {
     }
 
     private void writeListToExcel(ArrayList<StrisciaIvu> list, ArrayList<SegnalazioniSO> listSegnalazioniSO, ArrayList<SegnalazioniPDB> listSegnalazioniPDB, CellStyle cs, CellStyle csl) {
+
+        Map<String, String> mapLocalità = Utility.creaMappaLocalita();
+
         for (int i=0; i<list.size(); i++) {
             row = sheet.createRow(++rowCount);
             Cell cell;
@@ -334,9 +302,10 @@ public class ExcelWriter {
 //                        nota = nota + "-  " + (String) listSegnalazioniSO.get(j).getNota() + "\n";
 //                    }
                     SegnalazioniSO tempSegnSO = listSegnalazioniSO.get(j);
+                    System.out.println(trenoTmp + " - " + tempSegnSO.getNumeroTreno());
                     if(trenoTmp.equals(tempSegnSO.getNumeroTreno())){
                         offsetSO++;
-                        nota = nota + "-  [" +trenoTmp+ "] "+ (String) tempSegnSO.getNota() + "\n";
+                        nota = nota + "  [" +trenoTmp+ "] "+ (String) tempSegnSO.getNota() + "\n";
                     }
                 }
             }
@@ -362,7 +331,7 @@ public class ExcelWriter {
                     if (trenoTmp.equals(tempSegnPDB.getNumeroTreno())) {
                         offsetPDB++;
                         SegnalazioniPDB segnPDB= listSegnalazioniPDB.get(j);
-                        nota = nota + "-  [" + trenoTmp + "] " + (String) segnPDB.getCodice() +" - "+ segnPDB.getOrgano() +" - "+ segnPDB.getUbicazione() +" - "+ segnPDB.getStato() +" - "+ segnPDB.getDescrizione() +" - "+ segnPDB.getPosizione() + "\n";
+                        nota = nota + "  [" + trenoTmp + "] " + (String) segnPDB.getCodice() +" - "+ segnPDB.getOrgano() +" - "+ segnPDB.getUbicazione() +" - "+ segnPDB.getStato() +" - "+ segnPDB.getDescrizione() +" - "+ segnPDB.getPosizione() + "\n";
                     }
                 }
             }
@@ -374,101 +343,6 @@ public class ExcelWriter {
         }
     }
 
-//    private void writeListToExcelMultiDate(ArrayList<StrisciaIvu>[] list2, ArrayList<SegnalazioniSO> listSegnalazioniSO, ArrayList<SegnalazioniPDB> listSegnalazioniPDB, CellStyle cs, CellStyle csl) {
-//        for (ArrayList<StrisciaIvu> list : list2) {
-//            if (list.size() != 0) {
-//                StrisciaIvu lastSIVU = list.get(list.size() - 1);
-//
-//                row = sheet.createRow(++rowCount);
-//                Cell cell;
-//
-//
-//                cell = row.createCell(0);
-//                String depArrivo = lastSIVU.getDepositoArrivo();
-//                if (mapLocalità.get(depArrivo) != null)
-//                    cell.setCellValue((String) mapLocalità.get(depArrivo));
-//                else
-//                    cell.setCellValue((String) depArrivo);
-//                cell.setCellStyle(cs);
-//
-//
-//                cell = row.createCell(1);
-//                cell.setCellValue((String) lastSIVU.getNumeroCorsaArrivo());
-//                cell.setCellStyle(cs);
-//
-//                cell = row.createCell(2);
-//                cell.setCellValue((String) lastSIVU.getTipologiaVeicolo());
-//                cell.setCellStyle(cs);
-//
-//                cell = row.createCell(3);
-//                if (lastSIVU.getNumeroMateriale() < 10)
-//                    cell.setCellValue((String) "00" + lastSIVU.getNumeroMateriale());
-//                else
-//                    cell.setCellValue((String) "0" + lastSIVU.getNumeroMateriale());
-//                cell.setCellStyle(cs);
-//
-//                cell = row.createCell(4);
-//                cell.setCellStyle(csl);
-//
-//                for (int i = 0; i < list.size(); i++) {
-//
-//                    StrisciaIvu tempStriscia = list.get(i);
-//
-//                    ArrayList<String> treniDaCercare = tempStriscia.getTreniStrisciaIVU();
-//
-//                    int offsetSO = 1;
-//                    String nota = "";
-//                    for (String trenoTmp : treniDaCercare) {
-//                        for (int j = 0; j < listSegnalazioniSO.size(); j++) {
-//                            //                    if (tempStriscia.getTipologiaVeicolo().equals(listSegnalazioniSO.get(j).getTipologiaVeicolo()) && tempStriscia.getNumeroMateriale() == listSegnalazioniSO.get(j).getNumeroMateriale()) {
-//                            ////                    System.out.println(listSegnalazioni.get(j).getNota());
-//                            //                        offsetSO++;
-//                            ////                    cell = row.createCell(3+offset);
-//                            ////                    cell.setCellValue((String) listSegnalazioni.get(j).getNota());
-//                            //                        nota = nota + "-  " + (String) listSegnalazioniSO.get(j).getNota() + "\n";
-//                            //                    }
-//                            SegnalazioniSO tempSegnSO = listSegnalazioniSO.get(j);
-//                            if (tempStriscia.getNumeroMateriale()==tempSegnSO.getNumeroMateriale() && tempStriscia.getTipologiaVeicolo().equals(tempSegnSO.getTipologiaVeicolo())) {
-//                                offsetSO++;
-//                                nota = nota + "-  [" + trenoTmp + "  " + tempSegnSO.getDataTreno() + "] " + (String) tempSegnSO.getNota() + "\n";
-//                            }
-//                        }
-//                    }
-//
-//                    cell.setCellValue(nota);
-//
-//                    cell = row.createCell(5);
-//                    cell.setCellStyle(csl);
-//
-//                    int offsetPDB = 1;
-//                    nota = "";
-//                    for (String trenoTmp : treniDaCercare) {
-//                        for (int j = 0; j < listSegnalazioniPDB.size(); j++) {
-//                            //                if (tempStriscia.getTipologiaVeicolo().equals(listSegnalazioniPDB.get(j).getTipologiaVeicolo()) && tempStriscia.getNumeroMateriale() == listSegnalazioniPDB.get(j).getNumeroMateriale()) {
-//                            ////                    System.out.println(listSegnalazioni.get(j).getNota());
-//                            //                    offsetPDB++;
-//                            ////                    cell = row.createCell(3+offset);
-//                            ////                    cell.setCellValue((String) listSegnalazioni.get(j).getNota());
-//                            //                    SegnalazioniPDB segnPDB= listSegnalazioniPDB.get(j);
-//                            //                    nota = nota + "-  " + (String) segnPDB.getCodice() +" - "+ segnPDB.getOrgano() +" - "+ segnPDB.getUbicazione() +" - "+ segnPDB.getDescrizione() +" - "+ segnPDB.getPosizione() + "\n";
-//                            //                }
-//                            SegnalazioniPDB tempSegnPDB = listSegnalazioniPDB.get(j);
-//                            if (trenoTmp.equals(tempSegnPDB.getNumeroTreno())) {
-//                                offsetPDB++;
-//                                SegnalazioniPDB segnPDB = listSegnalazioniPDB.get(j);
-//                                nota = nota + "-  [" + trenoTmp + "] " + (String) segnPDB.getCodice() + " - " + segnPDB.getOrgano() + " - " + segnPDB.getUbicazione() + " - " + segnPDB.getDescrizione() + " - " + segnPDB.getPosizione() + "\n";
-//                            }
-//                        }
-//                    }
-//                    cell.setCellValue(nota);
-//
-//                    int maxOffset = Integer.max(offsetSO, offsetPDB);
-//                    //increase row height to accommodate two lines of text
-//                    row.setHeightInPoints(((maxOffset + 1) * sheet.getDefaultRowHeightInPoints()));
-//                }
-//            }
-//        }
-//    }
 
     private static void mergeAndCenter(Cell startCell, CellRangeAddress range) {
         startCell.getSheet().addMergedRegion(range);
@@ -480,10 +354,10 @@ public class ExcelWriter {
 
 
     public void writeMultiDate(ArrayList<Treno>[] listTreniNoImpianto500, ArrayList<Treno>[] listTreniNoImpianto1000, ArrayList<Treno>[] listTreniNoImpianto700, ArrayList<Treno>[] listTreniNoImpianto600, ArrayList<SegnalazioniSO> listSegnalazioniSO, ArrayList<SegnalazioniPDB> listSegnalazioniPDB, String dateToSearch) throws ParseException, IOException {
-        XSSFWorkbook workbook = new XSSFWorkbook();
+
         sheet = workbook.createSheet("FLOTTA FUORI IMPIANTO");
 
-        creaMappaLocalita();
+
 
         XSSFFont font = workbook.createFont();
         font.setFontHeightInPoints((short) 12);
@@ -515,22 +389,24 @@ public class ExcelWriter {
         cs3.setFont(font);
         cs3.setWrapText(true);
 
-        sheet.setColumnWidth(4, 100 * 256);
-        sheet.setColumnWidth(5, 100 * 256);
+//      STYLE per evidenziare la CELLA IN GIALLO
+        yellowCSL = workbook.createCellStyle();
+        yellowCSL.setAlignment(HorizontalAlignment.LEFT);
+        yellowCSL.setVerticalAlignment(VerticalAlignment.CENTER);
+        yellowCSL.setWrapText(true);
+        yellowCSL.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+        yellowCSL.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         rowCount = 0;
         row = sheet.createRow(++rowCount);
 
-
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Calendar c = Calendar.getInstance();
         c.setTime(sdf.parse(dateToSearch));
-        c.add(Calendar.DATE, 1);  // number of days to add
-        String nextDate = sdf.format(c.getTime());  // dt is now the new date
+        c.add(Calendar.DATE, -1);  // numero di giorni da aggiungere
+        String precDate = sdf.format(c.getTime());
 
-        Cell cell;
-
-        writeIntestazioneExcell(dateToSearch, nextDate, cs3);
+        writeIntestazioneExcell(precDate, dateToSearch, cs3);
 
         writeListToExcelMultiDate(listTreniNoImpianto500, listSegnalazioniSO, listSegnalazioniPDB, cs2, cs2l);
         writeListToExcelMultiDate(listTreniNoImpianto1000, listSegnalazioniSO, listSegnalazioniPDB, cs2, cs2l);
@@ -542,7 +418,10 @@ public class ExcelWriter {
         sheet.autoSizeColumn(1);
         sheet.autoSizeColumn(2);
         sheet.autoSizeColumn(3);
-//        sheet.autoSizeColumn(4);
+
+        sheet.setColumnWidth(4, 100 * 256);
+        sheet.setColumnWidth(5, 100 * 256);
+//        sheet.setColumnWidth(6, 70 * 256);
 
         try (FileOutputStream outputStream = new FileOutputStream("Tabella guasti Notturni.xlsx")) {
             workbook.write(outputStream);
@@ -550,6 +429,9 @@ public class ExcelWriter {
     }
 
     private void writeListToExcelMultiDate(ArrayList<Treno>[] arrayTreno, ArrayList<SegnalazioniSO> listSegnalazioniSO, ArrayList<SegnalazioniPDB> listSegnalazioniPDB, CellStyle cs, CellStyle csl) {
+
+        Map<String, String> mapLocalità = Utility.creaMappaLocalita();
+
         for (ArrayList<Treno> listTreni : arrayTreno) {
             int sizeListTreni = listTreni.size();
 
@@ -568,9 +450,53 @@ public class ExcelWriter {
                     cell.setCellValue((String) depArrivo);
                 cell.setCellStyle(cs);
 
+//                String numeroCorsa = lastTreno.getNumeroCorsa();
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+                int offsetTreni = 1;
+                int offsetSO = 1;
+                int offsetPDB = 1;
+                String notaSO = "";
+                String notaPDB = "";
+                String segnWCHK = "";
+                boolean wcHKKO = false;
+                ArrayList<String> listNumeroCorsa = new ArrayList<>();
+                for (Treno tempTreno : listTreni){
+                    offsetTreni++;
+                    if(!listNumeroCorsa.contains(tempTreno.getNumeroCorsa()))
+                        listNumeroCorsa.add(tempTreno.getNumeroCorsa());
+
+                    ArrayList<SegnalazioniSO> listSSO = tempTreno.getSegnalazioniSO();
+                    for (SegnalazioniSO sSO : listSSO) {
+                        offsetSO++;
+                        notaSO = notaSO + "  [" + sSO.getNumeroTreno() + "  " + dateFormat.format(sSO.getDataTreno()) + "] " + (String) sSO.getNota() + "\n";
+                    }
+
+                    ArrayList<SegnalazioniPDB> listSPDB = tempTreno.getSegnalazioniPDB();
+                    for (SegnalazioniPDB sPDB : listSPDB) {
+                        offsetPDB++;
+                        notaPDB = notaPDB + "  [" + sPDB.getNumeroTreno() + "  " + dateFormat.format(sPDB.getDataTreno()) + "]  " + sPDB.getPosizione() + "  - "+ (String) sPDB.getCodice() +" - "+ sPDB.getOrgano() +" - "+ sPDB.getUbicazione() +" - "+ sPDB.getDescrizione() + "\n";
+                        if(sPDB.getTipologiaVeicolo().equals("ETR700")){
+                            if(sPDB.getPosizione().equals("w2") && sPDB.getCodice().equals("143 - ETR Organo Ritirate") ){
+                                wcHKKO = true;
+                                segnWCHK = segnWCHK + "  [" + sPDB.getNumeroTreno() + "  " + dateFormat.format(sPDB.getDataTreno()) + "]  " + sPDB.getDescrizione() + "\n";
+                            }
+                        }
+                        else{
+                            if(sPDB.getPosizione().equals("w3") && sPDB.getCodice().equals("143 - ETR Organo Ritirate") ){
+                                wcHKKO = true;
+                                segnWCHK = segnWCHK + "  [" + sPDB.getNumeroTreno() + "  " + dateFormat.format(sPDB.getDataTreno()) + "]  " + sPDB.getDescrizione() + "\n";
+                            }
+                        }
+                    }
+                }
+
 
                 cell = row.createCell(1);
-                cell.setCellValue((String) lastTreno.getNumeroCorsa());
+                String numeroCorsa = "";
+                for(String tempCorsa : listNumeroCorsa)
+                    numeroCorsa += tempCorsa +"\n";
+                cell.setCellValue(numeroCorsa);
                 cell.setCellStyle(cs);
 
                 cell = row.createCell(2);
@@ -586,38 +512,28 @@ public class ExcelWriter {
 
                 cell = row.createCell(4);
                 cell.setCellStyle(csl);
+                cell.setCellValue(notaSO);
 
-
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-                int offsetSO = 1;
-                String nota = "";
-                for (Treno tempTreno : listTreni){
-                    ArrayList<SegnalazioniSO> listSSO = tempTreno.getSegnalazioniSO();
-                    for (SegnalazioniSO sSO : listSSO) {
-                        offsetSO++;
-                        nota = nota + "-  [" + sSO.getNumeroTreno() + "  " + dateFormat.format(sSO.getDataTreno()) + "] " + (String) sSO.getNota() + "\n";
-                    }
-                }
-
-                cell.setCellValue(nota);
 
                 cell = row.createCell(5);
-                cell.setCellStyle(csl);
 
-                int offsetPDB = 1;
-                nota = "";
-                for (Treno tempTreno : listTreni){
-                    ArrayList<SegnalazioniPDB> listSPDB = tempTreno.getSegnalazioniPDB();
-                    for (SegnalazioniPDB sPDB : listSPDB) {
-                        offsetPDB++;
-                        nota = nota + "-  [" + sPDB.getNumeroTreno() + "  " + dateFormat.format(sPDB.getDataTreno()) + "]  " + sPDB.getPosizione() + "  - "+ (String) sPDB.getCodice() +" - "+ sPDB.getOrgano() +" - "+ sPDB.getUbicazione() +" - "+ sPDB.getDescrizione() + "\n";
-                    }
+                if(wcHKKO) {
+                    cell.setCellStyle(yellowCSL);
+                    cell.setCellValue(notaPDB);
+                }
+                else{
+                    cell.setCellStyle(csl);
+                    cell.setCellValue(notaPDB);
                 }
 
-                cell.setCellValue(nota);
+//                if(wcHKKO) {
+//                    cell = row.createCell(6);
+//                    cell.setCellStyle(csl);
+//                    cell.setCellValue("VERIFICARE WC HK \n" + segnWCHK);
+//                }
 
-                int maxOffset = Integer.max(offsetSO, offsetPDB);
+                int maxTemp = Integer.max(offsetSO, offsetPDB);
+                int maxOffset = Integer.max(maxTemp,offsetTreni);
                 //increase row height to accommodate two lines of text
                 row.setHeightInPoints(((maxOffset + 1) * sheet.getDefaultRowHeightInPoints()));
                 }

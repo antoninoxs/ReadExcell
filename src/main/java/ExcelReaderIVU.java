@@ -26,7 +26,6 @@ public class ExcelReaderIVU {
     int size700 = 18;
     int size600 = 50;
 
-
     public ArrayList<StrisciaIvu> giriGiornalieri500[] = new ArrayList[size500];
     public ArrayList<StrisciaIvu> giriGiornalieri1000[] = new ArrayList[size1000];
     public ArrayList<StrisciaIvu> giriGiornalieri700[] = new ArrayList[size700];
