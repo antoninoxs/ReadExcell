@@ -195,8 +195,12 @@ public class ExcelReaderIVUDaCercaPartFuoriImpianto {
             String tempNumMateriale = parts[1];
 
             // parso il dato numeroMateriale per togliere l'orientamento
-            if (tempNumMateriale.length()!=0)
-                trenoTemp.setNumeroMateriale(Integer.parseInt(tempNumMateriale));
+            if (tempNumMateriale.length()!=0) {
+                if(tempNumMateriale.charAt(0)!='Y')
+                    trenoTemp.setNumeroMateriale(Integer.parseInt(tempNumMateriale));
+                else
+                    continue;
+            }
 
             if(tempTipMateriale.length()!=0)
                 trenoTemp.setTipologiaMateriale("ETR"+tempTipMateriale);
