@@ -510,13 +510,17 @@ public class ExcelWriter {
                     cell.setCellValue((String) "0" + lastTreno.getNumeroMateriale());
                 cell.setCellStyle(cs);
 
+
+
+
+
+                // nota SO
                 cell = row.createCell(4);
                 cell.setCellStyle(csl);
                 cell.setCellValue(notaSO);
 
-
+                // nota PDB
                 cell = row.createCell(5);
-
                 if(wcHKKO) {
                     cell.setCellStyle(yellowCSL);
                     cell.setCellValue(notaPDB);
