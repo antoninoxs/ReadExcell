@@ -131,6 +131,7 @@ public class ExcelReaderIVUDaCercaPartFuoriImpianto {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 
+        int contatoreRiga = 3;
         boolean salta =true;
         while (rowIterator.hasNext()) {
             // salta le prime  2 righe
@@ -143,67 +144,89 @@ public class ExcelReaderIVUDaCercaPartFuoriImpianto {
 
             Treno trenoTemp = new Treno();
 
-            String tmpDatePart = dataFormatter.formatCellValue(row.getCell(10));
-            String[] dataPartParts = tmpDatePart.split(" ");
-
-            String tempDatePartTotal = dataPartParts[0];
-            String tempOraPartTotal = dataPartParts[1];
-
-            String[] dataParts = tempDatePartTotal.split("\\.");
-
-            String tempGiorno = dataParts[0];
-            String tempMese = dataParts[1];
-            String tempAnno = dataParts[2];
-
-//            LocalTime localTimePartPrev = LocalTime.of(Integer.parseInt(tempOraPartTotal.substring(0,2)), Integer.parseInt(tempOraPartTotal.substring(3,5)));
-            String tempOra = tempOraPartTotal.substring(0,2);
-            String tempMin = tempOraPartTotal.substring(3,5);
-
-            trenoTemp.setDataPartenza(stringToDate(tempGiorno+"/"+tempMese+"/"+tempAnno+" "+tempOra+":"+tempMin));
-//            trenoTemp.setPartenzaPrevista(localTimePartPrev);
-
-            String tmpDateArr = dataFormatter.formatCellValue(row.getCell(11));
-            String[] dataArrParts = tmpDateArr.split(" ");
-
-            String tempDateArrTotal = dataArrParts[0];
-            String tempOraArrTotal = dataArrParts[1];
-
-            String[] dataPartsArr = tempDateArrTotal.split("\\.");
-
-            tempGiorno = dataPartsArr[0];
-            tempMese = dataPartsArr[1];
-            tempAnno = dataPartsArr[2];
-
-            tempOra = tempOraArrTotal.substring(0,2);
-            tempMin = tempOraArrTotal.substring(3,5);
-
-            trenoTemp.setDataArrivo(stringToDate(tempGiorno+"/"+tempMese+"/"+tempAnno+" "+tempOra+":"+tempMin));
-
-            trenoTemp.setTipologiaCorsa(dataFormatter.formatCellValue(row.getCell(3)));
-            trenoTemp.setDenominazioneTurnoMacc(dataFormatter.formatCellValue(row.getCell(4)));
-            trenoTemp.setNumeroCorsa(dataFormatter.formatCellValue(row.getCell(5)));
-            trenoTemp.setDepositoPartenza(dataFormatter.formatCellValue(row.getCell(12)));
-            trenoTemp.setDepositoArrivo(dataFormatter.formatCellValue(row.getCell(13)));
-
-            String numMaterialeCompleto = dataFormatter.formatCellValue(row.getCell(15));
-            if(numMaterialeCompleto.length()==0)
+            // salto tutti le note messe su ivu identificate come Tipologia corsa Stallo
+            if(dataFormatter.formatCellValue(row.getCell(14)).compareTo("Stallo")==0) {
+                contatoreRiga++;
                 continue;
-
-            String[] parts = numMaterialeCompleto.split("\\.");
-
-            String tempTipMateriale = parts[0];
-            String tempNumMateriale = parts[1];
-
-            // parso il dato numeroMateriale per togliere l'orientamento
-            if (tempNumMateriale.length()!=0) {
-                if(tempNumMateriale.charAt(0)!='Y')
-                    trenoTemp.setNumeroMateriale(Integer.parseInt(tempNumMateriale));
-                else
-                    continue;
             }
 
-            if(tempTipMateriale.length()!=0)
-                trenoTemp.setTipologiaMateriale("ETR"+tempTipMateriale);
+            String tmpDatePart = dataFormatter.formatCellValue(row.getCell(10));
+
+            try{
+
+                String[] dataPartParts = tmpDatePart.split(" ");
+                String tempDatePartTotal = dataPartParts[0];
+                String tempOraPartTotal = dataPartParts[1];
+
+                String[] dataParts = tempDatePartTotal.split("\\.");
+
+                String tempGiorno = dataParts[0];
+                String tempMese = dataParts[1];
+                String tempAnno = dataParts[2];
+
+    //            LocalTime localTimePartPrev = LocalTime.of(Integer.parseInt(tempOraPartTotal.substring(0,2)), Integer.parseInt(tempOraPartTotal.substring(3,5)));
+                String tempOra = tempOraPartTotal.substring(0,2);
+                String tempMin = tempOraPartTotal.substring(3,5);
+
+                trenoTemp.setDataPartenza(stringToDate(tempGiorno+"/"+tempMese+"/"+tempAnno+" "+tempOra+":"+tempMin));
+    //            trenoTemp.setPartenzaPrevista(localTimePartPrev);
+
+                String tmpDateArr = dataFormatter.formatCellValue(row.getCell(11));
+                String[] dataArrParts = tmpDateArr.split(" ");
+
+                String tempDateArrTotal = dataArrParts[0];
+                String tempOraArrTotal = dataArrParts[1];
+
+                String[] dataPartsArr = tempDateArrTotal.split("\\.");
+
+                tempGiorno = dataPartsArr[0];
+                tempMese = dataPartsArr[1];
+                tempAnno = dataPartsArr[2];
+
+                tempOra = tempOraArrTotal.substring(0,2);
+                tempMin = tempOraArrTotal.substring(3,5);
+
+                trenoTemp.setDataArrivo(stringToDate(tempGiorno+"/"+tempMese+"/"+tempAnno+" "+tempOra+":"+tempMin));
+
+                trenoTemp.setTipologiaCorsa(dataFormatter.formatCellValue(row.getCell(3)));
+                trenoTemp.setDenominazioneTurnoMacc(dataFormatter.formatCellValue(row.getCell(4)));
+                trenoTemp.setNumeroCorsa(dataFormatter.formatCellValue(row.getCell(5)));
+                trenoTemp.setDepositoPartenza(dataFormatter.formatCellValue(row.getCell(12)));
+                trenoTemp.setDepositoArrivo(dataFormatter.formatCellValue(row.getCell(13)));
+
+                String numMaterialeCompleto = dataFormatter.formatCellValue(row.getCell(15));
+                if(numMaterialeCompleto.length()==0) {
+                    contatoreRiga++;
+                    continue;
+                }
+
+                String[] parts = numMaterialeCompleto.split("\\.");
+
+                String tempTipMateriale = parts[0];
+                String tempNumMateriale = parts[1];
+
+                // parso il dato numeroMateriale per togliere l'orientamento
+                if (tempNumMateriale.length()!=0) {
+                    if(tempNumMateriale.charAt(0)!='Y')
+                        trenoTemp.setNumeroMateriale(Integer.parseInt(tempNumMateriale));
+                    else {
+                        contatoreRiga++;
+                        continue;
+                    }
+                }
+                if(tempTipMateriale.length()!=0)
+                    trenoTemp.setTipologiaMateriale("ETR"+tempTipMateriale);
+
+                contatoreRiga++;
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+                System.out.println();
+                System.out.println("FUNZIONE ExcelReaderIVUDaCercaPartFuoriImpianto");
+                System.out.println("ERRORE ALLA RIGA: " + contatoreRiga + " del file exportCerca.xlsx");
+                System.out.println("Aprire il file excel e verificare la riga. E riavviare il programma");
+                System.out.println(e.toString());
+                System.out.println();
+            }
 
 //            compare = 0 se le date sono uguali
 //            compare < 1 se la data in esame è minore della data in argomento
@@ -211,7 +234,6 @@ public class ExcelReaderIVUDaCercaPartFuoriImpianto {
             int compare = trenoTemp.getDataPartenza().compareTo(searchDate);
 
             if(compare > 0) {
-
                 for (int i =0; i< listMateriali.size(); i++) {
                     Materiale mat = listMateriali.get(i);
                     if (mat.getNumeroMateriale() == trenoTemp.getNumeroMateriale() && mat.getTipologiaMateriale().equals(trenoTemp.getTipologiaMateriale())) {
@@ -220,62 +242,6 @@ public class ExcelReaderIVUDaCercaPartFuoriImpianto {
                     }
                 }
             }
-
-
-
-
-//
-//
-//
-//            if(compare > 0 && trenoTemp.getTipologiaMateriale().equals("ETR500")) {
-////                System.out.println(trenoTemp.toString());
-//                if (!dep500AL.contains(trenoTemp.getDepositoPartenza())){
-////                    System.out.println("aggiungo: " + trenoTemp.toString());
-////                    System.out.println(" - " + trenoTemp.toString());
-//                    listTreniNoImpianto500[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-//                    listTreni500[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-//                }else {
-////                    System.out.println("     CLEAR   -> " + trenoTemp.getNumeroMateriale());
-////                    listTreniNoImpianto500[trenoTemp.getNumeroMateriale()].clear();
-//                }
-////                listTrenoCompleto.add(trenoTemp);
-//            }
-//
-//            if(compare > 0 && trenoTemp.getTipologiaMateriale().equals("ETR1000")) {
-//                if (!dep1000AL.contains(trenoTemp.getDepositoPartenza())){
-////                    System.out.println("aggiungo: " + trenoTemp.toString());
-//                    listTreniNoImpianto1000[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-//                    listTreni1000[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-//                }else {
-////                    System.out.println("     CLEAR   -> " + trenoTemp.getNumeroMateriale());
-////                    listTreniNoImpianto1000[trenoTemp.getNumeroMateriale()].clear();
-//                }
-////                listTrenoCompleto.add(trenoTemp);
-//            }
-//
-//            if(compare > 0 && trenoTemp.getTipologiaMateriale().equals("ETR700")) {
-//                if (!dep700AL.contains(trenoTemp.getDepositoPartenza())){
-////                    System.out.println("aggiungo: " + trenoTemp.toString());
-//                    listTreniNoImpianto700[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-//                    listTreni700[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-//                }else {
-////                    System.out.println("     CLEAR   -> " + trenoTemp.getNumeroMateriale());
-//                    listTreniNoImpianto700[trenoTemp.getNumeroMateriale()].clear();
-//                }
-////                listTrenoCompleto.add(trenoTemp);
-//            }
-//
-//            if(compare > 0 && (trenoTemp.getTipologiaMateriale().equals("ETR460") || trenoTemp.getTipologiaMateriale().equals("ETR463") || trenoTemp.getTipologiaMateriale().equals("ETR485") || trenoTemp.getTipologiaMateriale().equals("ETR600"))) {
-//                if (!dep600AL.contains(trenoTemp.getDepositoPartenza())){
-////                    System.out.println("aggiungo: " + trenoTemp.toString());
-//                    listTreniNoImpianto600[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-//                    listTreni600[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-//                }else {
-////                    System.out.println("     CLEAR   -> " + trenoTemp.getNumeroMateriale());
-//                    listTreniNoImpianto600[trenoTemp.getNumeroMateriale()].clear();
-//                }
-////                listTrenoCompleto.add(trenoTemp);
-//            }
         }
 
         for (Materiale mat : listMateriali) {

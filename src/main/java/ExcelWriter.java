@@ -3,11 +3,15 @@ import Entity.SegnalazioniSO;
 import Entity.StrisciaIvu;
 import Entity.Treno;
 import Utility.Utility;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFPalette;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTColor;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -24,6 +28,7 @@ public class ExcelWriter {
     int rowCount;
 
     CellStyle yellowCSL;
+    CellStyle greenCSL;
 
 
     public void write(ArrayList<StrisciaIvu> list500, ArrayList<StrisciaIvu> list1000, ArrayList<StrisciaIvu> list700, ArrayList<StrisciaIvu> list600, ArrayList<SegnalazioniSO> listSegnalazioni, ArrayList<SegnalazioniPDB> listSegnalazioniPDB, String dateToSearch) throws IOException, ParseException {
@@ -170,7 +175,7 @@ public class ExcelWriter {
     }
 
     private void writeIntestazioneExcell(String dateToSearch, String nextDate, CellStyle cs) {
-        Cell cell = row.createCell(4);
+        Cell cell = row.createCell(0);
         cell.setCellValue((String) "NOTTE DEL: " + dateToSearch + " su " + nextDate);
         cell.setCellStyle(cs);
 
@@ -192,10 +197,26 @@ public class ExcelWriter {
         cell.setCellStyle(cs);
 
         cell = row.createCell(4);
-        cell.setCellValue((String) "DEGRADO SO");
+        cell.setCellValue((String) "TRAZIONE");
         cell.setCellStyle(cs);
 
         cell = row.createCell(5);
+        cell.setCellValue((String) "CLIMA");
+        cell.setCellStyle(cs);
+
+        cell = row.createCell(6);
+        cell.setCellValue((String) "TOILETTE");
+        cell.setCellStyle(cs);
+
+        cell = row.createCell(7);
+        cell.setCellValue((String) "NOTE (indicare dettagli degradi)");
+        cell.setCellStyle(cs);
+
+        cell = row.createCell(8);
+        cell.setCellValue((String) "DEGRADO SO");
+        cell.setCellStyle(cs);
+
+        cell = row.createCell(9);
         cell.setCellValue((String) "DEGRADO PDB");
         cell.setCellStyle(cs);
     }
@@ -374,18 +395,30 @@ public class ExcelWriter {
         CellStyle cs2 = workbook.createCellStyle();
         cs2.setAlignment(HorizontalAlignment.CENTER);
         cs2.setVerticalAlignment(VerticalAlignment.CENTER);
+        cs2.setBorderTop(BorderStyle.THIN);
+        cs2.setBorderBottom(BorderStyle.THIN);
+        cs2.setBorderLeft(BorderStyle.THIN);
+        cs2.setBorderRight(BorderStyle.THIN);
         cs2.setWrapText(true);
 
 //      Allinemanto sinistra e orizzontale al centro
         CellStyle cs2l = workbook.createCellStyle();
         cs2l.setAlignment(HorizontalAlignment.LEFT);
         cs2l.setVerticalAlignment(VerticalAlignment.CENTER);
+        cs2l.setBorderTop(BorderStyle.THIN);
+        cs2l.setBorderBottom(BorderStyle.THIN);
+        cs2l.setBorderLeft(BorderStyle.THIN);
+        cs2l.setBorderRight(BorderStyle.THIN);
         cs2l.setWrapText(true);
 
 //      STYLE per l'intestazione
         CellStyle cs3 = workbook.createCellStyle();
         cs3.setAlignment(HorizontalAlignment.CENTER);
         cs3.setVerticalAlignment(VerticalAlignment.CENTER);
+        cs3.setBorderTop(BorderStyle.THIN);
+        cs3.setBorderBottom(BorderStyle.THIN);
+        cs3.setBorderLeft(BorderStyle.THIN);
+        cs3.setBorderRight(BorderStyle.THIN);
         cs3.setFont(font);
         cs3.setWrapText(true);
 
@@ -394,8 +427,34 @@ public class ExcelWriter {
         yellowCSL.setAlignment(HorizontalAlignment.LEFT);
         yellowCSL.setVerticalAlignment(VerticalAlignment.CENTER);
         yellowCSL.setWrapText(true);
+        yellowCSL.setBorderTop(BorderStyle.THIN);
+        yellowCSL.setBorderBottom(BorderStyle.THIN);
+        yellowCSL.setBorderLeft(BorderStyle.THIN);
+        yellowCSL.setBorderRight(BorderStyle.THIN);
         yellowCSL.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
         yellowCSL.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+//      STYLE per evidenziare la CELLA IN VERDE
+        greenCSL = workbook.createCellStyle();
+        greenCSL.setAlignment(HorizontalAlignment.LEFT);
+        greenCSL.setVerticalAlignment(VerticalAlignment.CENTER);
+        greenCSL.setWrapText(true);
+        greenCSL.setBorderTop(BorderStyle.THIN);
+        greenCSL.setBorderBottom(BorderStyle.THIN);
+        greenCSL.setBorderLeft(BorderStyle.THIN);
+        greenCSL.setBorderRight(BorderStyle.THIN);
+
+        HSSFWorkbook hwb = new HSSFWorkbook();
+        HSSFPalette palette = hwb.getCustomPalette();
+// get the color which most closely matches the color you want to use
+        HSSFColor myColor = palette.findSimilarColor(146, 208, 80);
+// get the palette index of that color
+        short palIndex = myColor.getIndex();
+// code to get the style for the cell goes here
+        greenCSL.setFillForegroundColor(palIndex);
+
+        greenCSL.setFillForegroundColor(IndexedColors.BRIGHT_GREEN.getIndex());
+        greenCSL.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         rowCount = 0;
         row = sheet.createRow(++rowCount);
@@ -418,9 +477,13 @@ public class ExcelWriter {
         sheet.autoSizeColumn(1);
         sheet.autoSizeColumn(2);
         sheet.autoSizeColumn(3);
+        sheet.autoSizeColumn(4);
+        sheet.autoSizeColumn(5);
+        sheet.autoSizeColumn(6);
 
-        sheet.setColumnWidth(4, 100 * 256);
-        sheet.setColumnWidth(5, 100 * 256);
+        sheet.setColumnWidth(7, 100 * 150);
+        sheet.setColumnWidth(8, 100 * 200);
+        sheet.setColumnWidth(9, 100 * 200);
 //        sheet.setColumnWidth(6, 70 * 256);
 
         try (FileOutputStream outputStream = new FileOutputStream("Tabella guasti Notturni.xlsx")) {
@@ -493,10 +556,11 @@ public class ExcelWriter {
 
 
                 cell = row.createCell(1);
-                String numeroCorsa = "";
-                for(String tempCorsa : listNumeroCorsa)
-                    numeroCorsa += tempCorsa +"\n";
-                cell.setCellValue(numeroCorsa);
+//                String numeroCorsa = "";
+//                for(String tempCorsa : listNumeroCorsa)
+//                    numeroCorsa += tempCorsa +"\n";
+//                cell.setCellValue(numeroCorsa);
+                cell.setCellValue(listNumeroCorsa.get(listNumeroCorsa.size()-1));
                 cell.setCellStyle(cs);
 
                 cell = row.createCell(2);
@@ -510,17 +574,32 @@ public class ExcelWriter {
                     cell.setCellValue((String) "0" + lastTreno.getNumeroMateriale());
                 cell.setCellStyle(cs);
 
+                // TRAZIONE
+                cell = row.createCell(4);
+                cell.setCellValue(("OK"));
+                cell.setCellStyle(greenCSL);
 
+                // CLIMA
+                cell = row.createCell(5);
+                cell.setCellValue(("OK"));
+                cell.setCellStyle(greenCSL);
 
+                // TOILETTE
+                cell = row.createCell(6);
+                cell.setCellValue(("OK"));
+                cell.setCellStyle(greenCSL);
 
+                // note
+                cell = row.createCell(7);
+                cell.setCellStyle(cs);
 
                 // nota SO
-                cell = row.createCell(4);
+                cell = row.createCell(8);
                 cell.setCellStyle(csl);
                 cell.setCellValue(notaSO);
 
                 // nota PDB
-                cell = row.createCell(5);
+                cell = row.createCell(9);
                 if(wcHKKO) {
                     cell.setCellStyle(yellowCSL);
                     cell.setCellValue(notaPDB);

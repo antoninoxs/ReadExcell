@@ -37,11 +37,11 @@ public class TabellaSegnalazioni {
     public static ArrayList<Treno> listTreniNoImpianto600[];
 
     public static void main(String[] args) throws IOException, InvalidFormatException, ParseException {
-//       String dateToSearch = "19/11/2021";
-//       Date searchDate = Utility.stringToDate(dateToSearch);
+       String dateToSearch = "08/07/2024 0:00";
+       Date searchDate = Utility.stringToDate(dateToSearch);
 
         // funzione inserimento data di ricerca da Command Line
-        Date searchDate = inputDataCommandLine();
+//        Date searchDate = inputDataCommandLine();
         Date searchDateOriginale = searchDate;
 
         long timestamp = searchDate.getTime();

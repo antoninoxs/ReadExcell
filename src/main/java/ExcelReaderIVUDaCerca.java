@@ -87,6 +87,7 @@ public class ExcelReaderIVUDaCerca {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 
+        int contatoreRiga = 3;
         boolean salta =true;
         while (rowIterator.hasNext()) {
             // salta le prime  2 righe
@@ -99,71 +100,96 @@ public class ExcelReaderIVUDaCerca {
 
             Treno trenoTemp = new Treno();
 
-            String tmpDatePart = dataFormatter.formatCellValue(row.getCell(10));
-            String[] dataPartParts = tmpDatePart.split(" ");
-
-            String tempDatePartTotal = dataPartParts[0];
-            String tempOraPartTotal = dataPartParts[1];
-
-            String[] dataParts = tempDatePartTotal.split("\\.");
-
-            String tempGiorno = dataParts[0];
-            String tempMese = dataParts[1];
-            String tempAnno = dataParts[2];
-
-//            LocalTime localTimePartPrev = LocalTime.of(Integer.parseInt(tempOraPartTotal.substring(0,2)), Integer.parseInt(tempOraPartTotal.substring(3,5)));
-            String tempOra = tempOraPartTotal.substring(0,2);
-            String tempMin = tempOraPartTotal.substring(3,5);
-
-            trenoTemp.setDataPartenza(stringToDate(tempGiorno+"/"+tempMese+"/"+tempAnno+" "+tempOra+":"+tempMin));
-//            trenoTemp.setPartenzaPrevista(localTimePartPrev);
-
-            String tmpDateArr = dataFormatter.formatCellValue(row.getCell(11));
-            String[] dataArrParts = tmpDateArr.split(" ");
-
-            String tempDateArrTotal = dataArrParts[0];
-            String tempOraArrTotal = dataArrParts[1];
-
-            String[] dataPartsArr = tempDateArrTotal.split("\\.");
-
-            tempGiorno = dataPartsArr[0];
-            tempMese = dataPartsArr[1];
-            tempAnno = dataPartsArr[2];
-
-            tempOra = tempOraArrTotal.substring(0,2);
-            tempMin = tempOraArrTotal.substring(3,5);
-
-            trenoTemp.setDataArrivo(stringToDate(tempGiorno+"/"+tempMese+"/"+tempAnno+" "+tempOra+":"+tempMin));
-
-            trenoTemp.setTipologiaCorsa(dataFormatter.formatCellValue(row.getCell(14)));
-            trenoTemp.setDenominazioneTurnoMacc(dataFormatter.formatCellValue(row.getCell(4)));
-            trenoTemp.setNumeroCorsa(dataFormatter.formatCellValue(row.getCell(5)));
-            trenoTemp.setDepositoPartenza(dataFormatter.formatCellValue(row.getCell(12)));
-            trenoTemp.setDepositoArrivo(dataFormatter.formatCellValue(row.getCell(13)));
-
             // salto tutti le note messe su ivu identificate come Tipologia corsa Stallo
-            if(dataFormatter.formatCellValue(row.getCell(14)).compareTo("Stallo")==0)
+            if(dataFormatter.formatCellValue(row.getCell(14)).compareTo("Stallo")==0) {
+                contatoreRiga++;
                 continue;
-
-            String numMaterialeCompleto = dataFormatter.formatCellValue(row.getCell(15));
-            if(numMaterialeCompleto.length()==0)
-                continue;
-
-            String[] parts = numMaterialeCompleto.split("\\.");
-
-            String tempTipMateriale = parts[0];
-            String tempNumMateriale = parts[1];
-
-            // parso il dato numeroMateriale per togliere l'orientamento
-            if (tempNumMateriale.length()!=0) {
-                if(tempNumMateriale.charAt(0)!='Y')
-                    trenoTemp.setNumeroMateriale(Integer.parseInt(tempNumMateriale));
-                else
-                    continue;
             }
 
-            if(tempTipMateriale.length()!=0)
-                trenoTemp.setTipologiaMateriale("ETR"+tempTipMateriale);
+            String tmpDatePart = dataFormatter.formatCellValue(row.getCell(10));
+
+            try{
+
+                String[] dataPartParts = tmpDatePart.split(" ");
+                String tempDatePartTotal = dataPartParts[0];
+                String tempOraPartTotal = dataPartParts[1];
+
+//                System.out.println(tempOraPartTotal);
+//                System.out.println(contatoreRiga);
+//                System.out.println("NUMERO CORSA:" + dataFormatter.formatCellValue(row.getCell(5)));
+
+                String[] dataParts = tempDatePartTotal.split("\\.");
+
+                String tempGiorno = dataParts[0];
+                String tempMese = dataParts[1];
+                String tempAnno = dataParts[2];
+
+
+//            LocalTime localTimePartPrev = LocalTime.of(Integer.parseInt(tempOraPartTotal.substring(0,2)), Integer.parseInt(tempOraPartTotal.substring(3,5)));
+                String tempOra = tempOraPartTotal.substring(0,2);
+                String tempMin = tempOraPartTotal.substring(3,5);
+
+                trenoTemp.setDataPartenza(stringToDate(tempGiorno+"/"+tempMese+"/"+tempAnno+" "+tempOra+":"+tempMin));
+//            trenoTemp.setPartenzaPrevista(localTimePartPrev);
+
+                String tmpDateArr = dataFormatter.formatCellValue(row.getCell(11));
+                String[] dataArrParts = tmpDateArr.split(" ");
+
+                String tempDateArrTotal = dataArrParts[0];
+                String tempOraArrTotal = dataArrParts[1];
+
+                String[] dataPartsArr = tempDateArrTotal.split("\\.");
+
+                tempGiorno = dataPartsArr[0];
+                tempMese = dataPartsArr[1];
+                tempAnno = dataPartsArr[2];
+
+                tempOra = tempOraArrTotal.substring(0,2);
+                tempMin = tempOraArrTotal.substring(3,5);
+
+                trenoTemp.setDataArrivo(stringToDate(tempGiorno+"/"+tempMese+"/"+tempAnno+" "+tempOra+":"+tempMin));
+
+                trenoTemp.setTipologiaCorsa(dataFormatter.formatCellValue(row.getCell(14)));
+                trenoTemp.setDenominazioneTurnoMacc(dataFormatter.formatCellValue(row.getCell(4)));
+                trenoTemp.setNumeroCorsa(dataFormatter.formatCellValue(row.getCell(5)));
+                trenoTemp.setDepositoPartenza(dataFormatter.formatCellValue(row.getCell(12)));
+                trenoTemp.setDepositoArrivo(dataFormatter.formatCellValue(row.getCell(13)));
+
+                String numMaterialeCompleto = dataFormatter.formatCellValue(row.getCell(15));
+                if(numMaterialeCompleto.length()==0) {
+                    contatoreRiga++;
+                    continue;
+                }
+
+                String[] parts = numMaterialeCompleto.split("\\.");
+
+                String tempTipMateriale = parts[0];
+                String tempNumMateriale = parts[1];
+
+                // parso il dato numeroMateriale per togliere l'orientamento
+                if (tempNumMateriale.length()!=0) {
+                    if(tempNumMateriale.charAt(0)!='Y')
+                        trenoTemp.setNumeroMateriale(Integer.parseInt(tempNumMateriale));
+                    else {
+                        contatoreRiga++;
+                        continue;
+                    }
+                }
+
+                if(tempTipMateriale.length()!=0)
+                    trenoTemp.setTipologiaMateriale("ETR"+tempTipMateriale);
+
+
+                contatoreRiga++;
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+                System.out.println();
+                System.out.println("FUNZIONE ExcelReaderIVUDaCerca");
+                System.out.println("ERRORE ALLA RIGA: " + contatoreRiga + " del file exportCerca.xlsx");
+                System.out.println("Aprire il file excel e verificare la riga. E riavviare il programma");
+                System.out.println(e.toString());
+                System.out.println();
+            }
 
 //            compare = 0 se le date sono uguali
 //            compare < 1 se la data in esame è minore della data in argomento
