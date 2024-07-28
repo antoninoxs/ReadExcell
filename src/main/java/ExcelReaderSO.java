@@ -14,21 +14,15 @@ public class ExcelReaderSO {
 
     public ArrayList <SegnalazioniSO> ExcelReaderSO(String path) throws IOException, InvalidFormatException {
 
-        // Creating a Workbook from an Excel file (.xls or .xlsx)
-
         Workbook workbook = WorkbookFactory.create(new File(path));
-
-        // Retrieving the number of sheets in the Workbook
-        System.out.println("La cartella di lavoro ha " + workbook.getNumberOfSheets() + " foglio");
-
-        // 1. You can obtain a sheetIterator and iterate over it
+        // Ho un iteratore per ogni Foglio
         Iterator<Sheet> sheetIterator = workbook.sheetIterator();
         while (sheetIterator.hasNext()) {
             Sheet sheet = sheetIterator.next();
-            System.out.println("=> " + sheet.getSheetName());
+//            System.out.println("=> " + sheet.getSheetName());
         }
 
-        // Getting the Sheet at index zero
+        // prendo il Foglio con indice 0
         Sheet sheet = workbook.getSheetAt(0);
 
         // Create a DataFormatter to format and get each cell's value as String

@@ -45,7 +45,7 @@ public class Utility {
     }
 
     public static Date stringToDate(String dateToSearch){
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy H:m", Locale.ITALY);
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ITALY);
         Date searchDate = null;
         try {
             searchDate = format.parse(dateToSearch);

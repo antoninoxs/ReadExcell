@@ -1,4 +1,3 @@
-import Entity.StrisciaIvu;
 import Entity.Treno;
 import Utility.Utility;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -6,16 +5,12 @@ import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLOutput;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 import static Utility.Utility.*;
-//Gunzione principlae per la creazione della tabella guasti notturni
-public class ExcelReaderIVUDaCerca {
+//Funzione principale per la creazione della tabella Situazione ETR Giornaliera
+
+public class ExcelReaderIVUDaCercaTabGuastiGiorn {
     public static final String[] dep500 = {"MSDL", "MIMA", "NAIF"};
     public static final String[] dep1000 = {"MIMA", "NAIF"};
     public static final String[] dep700 = {"MIMA", "MSDL"};
@@ -36,17 +31,13 @@ public class ExcelReaderIVUDaCerca {
     public ArrayList<Treno> listTreni700[] = new ArrayList[size700];
     public ArrayList<Treno> listTreni600[] = new ArrayList[size600];
 
-    public ArrayList<Treno> listTreniNoImpianto500[] = new ArrayList[size500];
-    public ArrayList<Treno> listTreniNoImpianto1000[] = new ArrayList[size1000];
-    public ArrayList<Treno> listTreniNoImpianto700[] = new ArrayList[size700];
-    public ArrayList<Treno> listTreniNoImpianto600[] = new ArrayList[size600];
+    public ArrayList<Treno> listTreniGuastiGiornalieri500[] = new ArrayList[size500];
+    public ArrayList<Treno> listTreniGuastiGiornalieri1000[] = new ArrayList[size1000];
+    public ArrayList<Treno> listTreniGuastiGiornalieri700[] = new ArrayList[size700];
+    public ArrayList<Treno> listTreniGuastiGiornalieri600[] = new ArrayList[size600];
 
     public ArrayList<Treno> ultimoTrenoMaterialiFermiDa24H = new ArrayList<>();
 
-    public ArrayList<Integer> numMatFermiDa24H500 = new ArrayList<>();
-    public ArrayList<Integer> numMatFermiDa24H1000 = new ArrayList<>();
-    public ArrayList<Integer> numMatFermiDa24H700 = new ArrayList<>();
-    public ArrayList<Integer> numMatFermiDa24H600 = new ArrayList<>();
 
     ArrayList<Treno> listTrenoCompleto = new ArrayList<>();
 
@@ -54,21 +45,25 @@ public class ExcelReaderIVUDaCerca {
 
         //      INIZIALIZZO GLI ARRAY LIST
         for (int i = 0; i<size500; i++){
-            listTreniNoImpianto500[i] = new ArrayList<Treno>();
+            listTreniGuastiGiornalieri500[i] = new ArrayList<Treno>();
             listTreni500[i] = new ArrayList<Treno>();
         }
         for (int i = 0; i<size1000; i++){
-            listTreniNoImpianto1000[i] = new ArrayList<Treno>();
+            listTreniGuastiGiornalieri1000[i] = new ArrayList<Treno>();
             listTreni1000[i] = new ArrayList<Treno>();
         }
         for (int i = 0; i<size700; i++){
-            listTreniNoImpianto700[i] = new ArrayList<Treno>();
+            listTreniGuastiGiornalieri700[i] = new ArrayList<Treno>();
             listTreni700[i] = new ArrayList<Treno>();
         }
         for (int i = 0; i<size600; i++){
-            listTreniNoImpianto600[i] = new ArrayList<Treno>();
+            listTreniGuastiGiornalieri600[i] = new ArrayList<Treno>();
             listTreni600[i] = new ArrayList<Treno>();
         }
+
+        Date minDate = Utility.stringToDate(searchDate.getDate()+"/"+(searchDate.getMonth()+1)+"/"+(searchDate.getYear()+1900)+ " 00:01");
+//        Date minDate = stringToDate("23/07/2024 00:01");
+        Date maxDate = Utility.stringToDate(searchDate.getDate()+"/"+(searchDate.getMonth()+1)+"/"+(searchDate.getYear()+1900)+ " 23:59");
 
         // Creating a Workbook from an Excel file (.xls or .xlsx)
         Workbook workbook = WorkbookFactory.create(new File(path));
@@ -194,52 +189,51 @@ public class ExcelReaderIVUDaCerca {
 //            compare = 0 se le date sono uguali
 //            compare < 1 se la data in esame è minore della data in argomento
 //            compare > 1 se la data in esame è maggiore della data in argomento
-            int compare = trenoTemp.getDataPartenza().compareTo(searchDate);
 
-            if(compare<=0 && trenoTemp.getTipologiaMateriale().equals("ETR500")) {
-                if (!dep500AL.contains(trenoTemp.getDepositoArrivo())){
-//                    System.out.println("aggiungo: " + trenoTemp.toString());
-                    listTreniNoImpianto500[trenoTemp.getNumeroMateriale()].add(trenoTemp);
+            int compareDataPartenzaConSearchDate = trenoTemp.getDataPartenza().compareTo(searchDate);
+            int compareDataPartenzaConMinDate = trenoTemp.getDataPartenza().compareTo(minDate);
+            int compareDataArrivo = trenoTemp.getDataArrivo().compareTo(maxDate);
+
+            // è un 500. La data di partenza è compresa tra mezzanotte e le 17:00
+            if(trenoTemp.getTipologiaMateriale().equals("ETR500") ){
+                if(compareDataPartenzaConMinDate >= 0 && compareDataPartenzaConSearchDate<=0) {
+//                   System.out.println("COMPARE SearchDATE - "+ trenoTemp.getNumeroCorsa()+ "   " +trenoTemp.getDataPartenza() + " - " + searchDate + " -> " +compareDataPartenzaConSearchDate);
+//                    System.out.println("COMPARE MINDATE - "+ trenoTemp.getNumeroCorsa()+ "   " +trenoTemp.getDataPartenza() + " - " + minDate + " -> " +compareDataPartenzaConSearchDate);
+
+                    listTreniGuastiGiornalieri500[trenoTemp.getNumeroMateriale()].add(trenoTemp);
                     listTreni500[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-                }else {
-//                    System.out.println("     CLEAR   -> " + trenoTemp.getNumeroMateriale());
-                    listTreniNoImpianto500[trenoTemp.getNumeroMateriale()].clear();
                 }
-//                listTrenoCompleto.add(trenoTemp);
             }
 
-            if(compare<=0 && trenoTemp.getTipologiaMateriale().equals("ETR1000")) {
-                if (!dep1000AL.contains(trenoTemp.getDepositoArrivo())){
-//                    System.out.println("aggiungo: " + trenoTemp.toString());
-                    listTreniNoImpianto1000[trenoTemp.getNumeroMateriale()].add(trenoTemp);
+            if(trenoTemp.getTipologiaMateriale().equals("ETR1000")) {
+                if(compareDataPartenzaConMinDate >= 0 && compareDataPartenzaConSearchDate<=0) {
+//                   System.out.println("COMPARE SearchDATE - "+ trenoTemp.getNumeroCorsa()+ "   " +trenoTemp.getDataPartenza() + " - " + searchDate + " -> " +compareDataPartenzaConSearchDate);
+//                    System.out.println("COMPARE MINDATE - "+ trenoTemp.getNumeroCorsa()+ "   " +trenoTemp.getDataPartenza() + " - " + minDate + " -> " +compareDataPartenzaConSearchDate);
+
+                    listTreniGuastiGiornalieri1000[trenoTemp.getNumeroMateriale()].add(trenoTemp);
                     listTreni1000[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-                }else {
-//                    System.out.println("     CLEAR   -> " + trenoTemp.getNumeroMateriale());
-                    listTreniNoImpianto1000[trenoTemp.getNumeroMateriale()].clear();
                 }
 //                listTrenoCompleto.add(trenoTemp);
             }
 
-            if(compare<=0 && trenoTemp.getTipologiaMateriale().equals("ETR700")) {
-                if (!dep700AL.contains(trenoTemp.getDepositoArrivo())){
-//                    System.out.println("aggiungo: " + trenoTemp.toString());
-                    listTreniNoImpianto700[trenoTemp.getNumeroMateriale()].add(trenoTemp);
+            if(trenoTemp.getTipologiaMateriale().equals("ETR700")) {
+                if(compareDataPartenzaConMinDate >= 0 && compareDataPartenzaConSearchDate<=0) {
+//                  System.out.println("COMPARE SearchDATE - "+ trenoTemp.getNumeroCorsa()+ "   " +trenoTemp.getDataPartenza() + " - " + searchDate + " -> " +compareDataPartenzaConSearchDate);
+//                  System.out.println("COMPARE MINDATE - "+ trenoTemp.getNumeroCorsa()+ "   " +trenoTemp.getDataPartenza() + " - " + minDate + " -> " +compareDataPartenzaConSearchDate);
+
+                    listTreniGuastiGiornalieri700[trenoTemp.getNumeroMateriale()].add(trenoTemp);
                     listTreni700[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-                }else {
-//                    System.out.println("     CLEAR   -> " + trenoTemp.getNumeroMateriale());
-                    listTreniNoImpianto700[trenoTemp.getNumeroMateriale()].clear();
                 }
 //                listTrenoCompleto.add(trenoTemp);
             }
 
-            if(compare<=0 && (trenoTemp.getTipologiaMateriale().equals("ETR460") || trenoTemp.getTipologiaMateriale().equals("ETR463") || trenoTemp.getTipologiaMateriale().equals("ETR485") || trenoTemp.getTipologiaMateriale().equals("ETR600"))) {
-                if (!dep600AL.contains(trenoTemp.getDepositoArrivo())){
-//                    System.out.println("aggiungo: " + trenoTemp.toString());
-                    listTreniNoImpianto600[trenoTemp.getNumeroMateriale()].add(trenoTemp);
+            if((trenoTemp.getTipologiaMateriale().equals("ETR460") || trenoTemp.getTipologiaMateriale().equals("ETR463") || trenoTemp.getTipologiaMateriale().equals("ETR485") || trenoTemp.getTipologiaMateriale().equals("ETR600"))) {
+                if(compareDataPartenzaConMinDate >= 0 && compareDataPartenzaConSearchDate<=0) {
+//                  System.out.println("COMPARE SearchDATE - "+ trenoTemp.getNumeroCorsa()+ "   " +trenoTemp.getDataPartenza() + " - " + searchDate + " -> " +compareDataPartenzaConSearchDate);
+//                  System.out.println("COMPARE MINDATE - "+ trenoTemp.getNumeroCorsa()+ "   " +trenoTemp.getDataPartenza() + " - " + minDate + " -> " +compareDataPartenzaConSearchDate);
+
+                    listTreniGuastiGiornalieri600[trenoTemp.getNumeroMateriale()].add(trenoTemp);
                     listTreni600[trenoTemp.getNumeroMateriale()].add(trenoTemp);
-                }else {
-//                    System.out.println("     CLEAR   -> " + trenoTemp.getNumeroMateriale());
-                    listTreniNoImpianto600[trenoTemp.getNumeroMateriale()].clear();
                 }
 //                listTrenoCompleto.add(trenoTemp);
             }
@@ -250,17 +244,16 @@ public class ExcelReaderIVUDaCerca {
 
     public static void main (String[] args){
         String file = "./exportCerca.xlsx";
-        Date dateAvanzata = Utility.stringToDate("08/12/2021 0:0");
+        Date dateAvanzata = Utility.stringToDate("23/07/2024 17:00");
 
         long timestamp = dateAvanzata.getTime();
-        dateAvanzata.setTime(timestamp + 90000000);
+//        dateAvanzata.setTime(timestamp + 90000000);
         System.out.println(dateAvanzata.toString());
 
-        ExcelReaderIVUDaCerca excelReaderCerca = new ExcelReaderIVUDaCerca();
+        ExcelReaderIVUDaCercaTabGuastiGiorn excelReaderCerca = new ExcelReaderIVUDaCercaTabGuastiGiorn();
         try {
             excelReaderCerca.ExcelReaderIVUdaCercaMultipleDate(file,dateAvanzata);
             excelReaderCerca.printListTurnoMacchina();
-            excelReaderCerca.materialiFermiDa24H(dateAvanzata);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvalidFormatException e) {
@@ -270,19 +263,19 @@ public class ExcelReaderIVUDaCerca {
 
     public void printListTurnoMacchina() {
         System.out.println("");
-        printTreniMateriali(listTreniNoImpianto500, "ETR500");
+        printTreniMateriali(listTreniGuastiGiornalieri500, "ETR500");
         System.out.println("");
 
         System.out.println("");
-        printTreniMateriali(listTreniNoImpianto1000, "ETR1000");
+        printTreniMateriali(listTreniGuastiGiornalieri1000, "ETR1000");
         System.out.println("");
 
         System.out.println("");
-        printTreniMateriali(listTreniNoImpianto700, "ETR700");
+        printTreniMateriali(listTreniGuastiGiornalieri700, "ETR700");
         System.out.println("");
 
         System.out.println("");
-        printTreniMateriali(listTreniNoImpianto600, "ETR600 - ETR485 - ETR460 - ETR463");
+        printTreniMateriali(listTreniGuastiGiornalieri600, "ETR600 - ETR485 - ETR460 - ETR463");
         System.out.println("");
     }
     public void printTreniMateriali(ArrayList<Treno> listTreniNoImpianto[] , String tipoMateriale){
@@ -302,22 +295,21 @@ public class ExcelReaderIVUDaCerca {
 
     }
 
-
     public void printListMaterialiServizio(){
         System.out.println("");
-        printMaterialeServizi(listTreniNoImpianto500, "ETR500");
+        printMaterialeServizi(listTreniGuastiGiornalieri500, "ETR500");
         System.out.println("");
 
         System.out.println("");
-        printMaterialeServizi(listTreniNoImpianto1000, "ETR1000");
+        printMaterialeServizi(listTreniGuastiGiornalieri1000, "ETR1000");
         System.out.println("");
 
         System.out.println("");
-        printMaterialeServizi(listTreniNoImpianto700, "ETR700");
+        printMaterialeServizi(listTreniGuastiGiornalieri700, "ETR700");
         System.out.println("");
 
         System.out.println("");
-        printMaterialeServizi(listTreniNoImpianto600, "ETR600 - ETR485 - ETR460 - ETR463");
+        printMaterialeServizi(listTreniGuastiGiornalieri600, "ETR600 - ETR485 - ETR460 - ETR463");
         System.out.println("");
     }
     public void printMaterialeServizi(ArrayList<Treno> listTreniNoImpianto[] , String tipoMateriale){
@@ -338,134 +330,4 @@ public class ExcelReaderIVUDaCerca {
 
     }
 
-    public void materialiFermiDa24H(Date date){
-        compilaALnumeriMateriali();
-        Date dateOriginal = date;
-        long timestamp = date.getTime();
-        dateOriginal.setTime(timestamp - 90000000);
-        System.out.println(date.toString());
-
-
-        System.out.println();
-        for (int i : numMateriali500){
-            ArrayList<Treno> list500 = listTreni500[i];
-            int sizeList500 = list500.size();
-            if (!list500.isEmpty()){
-                Treno t = list500.get(sizeList500-1);
-                if (t.getDataArrivo().before(dateOriginal)) {
-                    numMatFermiDa24H500.add(i);
-                    ultimoTrenoMaterialiFermiDa24H.add(t);
-                }
-            }
-            else{
-                Treno t = new Treno();
-                t.setNumeroMateriale(i);
-                t.setTipologiaMateriale("ETR500");
-                ultimoTrenoMaterialiFermiDa24H.add(t);
-                numMatFermiDa24H500.add(i);
-            }
-        }
-        for (int i : numMateriali1000){
-            ArrayList<Treno> list1000 = listTreni1000[i];
-            int sizeList500 = list1000.size();
-            if (!list1000.isEmpty()){
-                Treno t = list1000.get(sizeList500-1);
-                if (t.getDataArrivo().before(dateOriginal)) {
-                    numMatFermiDa24H1000.add(i);
-                    ultimoTrenoMaterialiFermiDa24H.add(t);
-                }
-            }
-            else{
-                Treno t = new Treno();
-                t.setNumeroMateriale(i);
-                t.setTipologiaMateriale("ETR1000");
-                ultimoTrenoMaterialiFermiDa24H.add(t);
-                numMatFermiDa24H1000.add(i);
-            }
-        }
-        for (int i : numMateriali700){
-            ArrayList<Treno> list700 = listTreni700[i];
-            int sizeList500 = list700.size();
-            if (!list700.isEmpty()){
-                Treno t = list700.get(sizeList500-1);
-                if (t.getDataArrivo().before(dateOriginal)) {
-                    numMatFermiDa24H700.add(i);
-                    ultimoTrenoMaterialiFermiDa24H.add(t);
-                }
-            }
-            else{
-                Treno t = new Treno();
-                t.setNumeroMateriale(i);
-                t.setTipologiaMateriale("ETR700");
-                ultimoTrenoMaterialiFermiDa24H.add(t);
-                numMatFermiDa24H700.add(i);
-            }
-        }
-        for (int i : numMateriali600){
-            ArrayList<Treno> list600 = listTreni600[i];
-            int sizeList500 = list600.size();
-            if (!list600.isEmpty()){
-                Treno t = list600.get(sizeList500-1);
-                if (t.getDataArrivo().before(dateOriginal)) {
-                    numMatFermiDa24H600.add(i);
-                    ultimoTrenoMaterialiFermiDa24H.add(t);
-                }
-            }
-            else{
-                Treno t = new Treno();
-                t.setNumeroMateriale(i);
-                if (i>=1 && i<=12) {
-                    t.setTipologiaMateriale("ETR600");
-                }
-                else if (i>=21 && i<=28) {
-                    t.setTipologiaMateriale("ETR460");
-                }
-                else if (i==30) {
-                    t.setTipologiaMateriale("ETR460");
-                }
-                else if (i>=31 && i<=45) {
-                    t.setTipologiaMateriale("ETR485");
-                }
-
-                ultimoTrenoMaterialiFermiDa24H.add(t);
-                numMatFermiDa24H600.add(i);
-            }
-        }
-        printMaterialiFermiDa24H();
-    }
-
-    public void printMaterialiFermiDa24H(){
-        compilaALnumeriMateriali();
-        System.out.println("Materiali Fermi da 24 H");
-        String print = "";
-        for (int i : numMatFermiDa24H500){
-            print += i + ", ";
-        }
-        System.out.println(print);
-
-        System.out.println();
-        print = "";
-        for (int i : numMatFermiDa24H1000){
-            print += i + ", ";
-        }
-        System.out.println(print);
-
-        System.out.println();
-        print = "";
-        for (int i : numMatFermiDa24H700){
-            print += i + ", ";
-        }
-        System.out.println(print);
-
-        System.out.println();
-        print = "";
-        for (int i : numMatFermiDa24H600){
-            print += i + ", ";
-        }
-        System.out.println(print);
-
-        for (Treno t : ultimoTrenoMaterialiFermiDa24H){
-            System.out.println(t.toString());
-        }
-    }
 }
